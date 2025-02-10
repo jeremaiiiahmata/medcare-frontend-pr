@@ -2,6 +2,10 @@ import "./App.css";
 import { AuthProvider } from "./context/AuthContext";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./utils/PrivateRoute";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import LandingPage from "./pages/LandingPage";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -10,15 +14,15 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route element={<PrivateRoute />}>
-              <Route path="/dashboard" />
+              <Route Component={Dashboard} path="/dashboard" />
               <Route path="/create-patient" />
               <Route path="/create-prescription" />
               <Route path="/create-preassessment" />
               <Route path="/edit-profile" />
             </Route>
-            <Route path="/login" />
-            <Route path="/register" />
-            <Route path="/" />
+            <Route Component={LoginPage} path="/login" />
+            <Route Component={RegisterPage} path="/register" />
+            <Route Component={LandingPage} path="/" />
           </Routes>
         </AuthProvider>
       </Router>

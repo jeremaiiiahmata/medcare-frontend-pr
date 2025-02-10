@@ -8,11 +8,12 @@ interface Props {
   children: ReactNode;
 }
 
-const [loading, setLoading] = useState<boolean>(true);
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const navigate = useNavigate();
 
 export const AuthProvider = ({ children }: Props) => {
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState<boolean>(true);
   const [authTokens, setAuthTokens] = useState<AuthTokens | null>(() => {
     const tokens = localStorage.getItem("authTokens");
     return tokens ? JSON.parse(tokens) : null;

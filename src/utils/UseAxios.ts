@@ -9,6 +9,7 @@ const baseURL = "http://127.0.0.1:8000/api";
 
 const useAxios = (): AxiosInstance => {
   const authContext = useContext(AuthContext);
+
   if (!authContext) {
     throw new Error("useAxios must be used within an AuthProvider");
   }
