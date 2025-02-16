@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
+import Navbar from "../components/Navbar";
 
 const PrivateRoute = () => {
   const authContext = useContext(AuthContext);
@@ -11,7 +12,14 @@ const PrivateRoute = () => {
 
   const { user } = authContext;
 
-  return user ? <Outlet /> : <Navigate to="/" replace />;
+  return user ? (
+    <div className="h-full">
+      <Navbar />
+      <Outlet />
+    </div>
+  ) : (
+    <Navigate to="/" replace />
+  );
 };
 
 export default PrivateRoute;

@@ -57,7 +57,7 @@ const HomePage = () => {
                   onChange={(e) => {
                     setPassword(e.target.value);
                   }}
-                  type="text"
+                  type="password"
                   placeholder="Password"
                   className="border rounded-md p-1 border-gray-300"
                 />

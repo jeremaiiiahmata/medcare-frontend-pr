@@ -66,6 +66,7 @@ const LoginForm = () => {
                   className="form-control"
                   id="password"
                   placeholder="Enter your password"
+                  hidden
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
