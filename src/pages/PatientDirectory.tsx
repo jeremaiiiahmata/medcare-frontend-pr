@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import PrimaryBtn from "../components/PrimaryBtn";
 import Tabular from "../components/Tabular";
 import { Patient } from "../models/PatientInterface";
@@ -6,21 +6,92 @@ import AuthContext from "../context/AuthContext";
 import Modal from "../components/Modal";
 
 const PatientDirectory = () => {
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const authContext = useContext(AuthContext);
 
   if (!authContext) {
     throw new Error("PrivateRoute must be used within an AuthProvider");
   }
 
-  const { authTokens } = authContext;
+  const { authTokens, user } = authContext;
 
+  //temporary lang to
   if (!authTokens) {
-    //temporary
     throw new Error("No tokens");
+  } else if (!user) {
+    throw new Error("No user");
   }
+
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  //new patient usestates
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [age, setAge] = useState<number>(0);
+  const [address, setAddress] = useState<string>("");
+  const [bloodType, setBloodType] = useState<string>("");
+  const [contact, setContact] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+  const [weight, setWeight] = useState<number>(0);
+  const [seniorId, setSeniorId] = useState<string>("");
+  const [allergies, setAllergies] = useState<string>("");
+
+  const addPatient = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const newPatient: Patient = {
+      doctor: 1, // use id based on current user
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      age: age,
+      address: address,
+
+      blood_type: bloodType,
+      contact_number: contact,
+      gender: gender,
+      seniorId: seniorId,
+      weight: weight,
+      allergies: allergies,
+    };
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/create-patient", {
+        method: "POST",
+        body: JSON.stringify(newPatient),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.access}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error! status: ${response.status}`);
+      }
+
+      const newData = response.json();
+      console.log("New Patient added!", newData);
+      handleClear();
+      setIsOpen(!open);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleClear = () => {
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setAge(0);
+    setBloodType("");
+    setContact("");
+    setGender("");
+    setWeight(0);
+    setSeniorId("");
+    setAllergies("");
+    setAddress("");
+  };
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -40,65 +111,151 @@ const PatientDirectory = () => {
     };
 
     fetchPatients();
-    console.log(patients);
-  }, []);
+  }, [patients]);
 
   return (
     <div className="h-full w-full p-7 flex justify-center flex-col">
       {isOpen ? (
         <Modal title="Add Patient" setIsOpen={setIsOpen}>
           <div className="border rounded-full my-2"></div>
-          <form>
+          <form onSubmit={addPatient}>
             <div className="flex flex-col gap-6">
-              <div className="flex">
-                <div className="flex flex-col">
+              <div className="flex justify-between">
+                <div className="flex flex-col w-60">
                   <label>First Name</label>
-                  <input placeholder="First Name" />
+                  <input
+                    className="border rounded-md px-2 border-gray-300"
+                    placeholder="First Name"
+                    value={firstName}
+                    onChange={(e) => {
+                      setFirstName(e.target.value);
+                    }}
+                  />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col w-60">
                   <label>Last Name</label>
-                  <input placeholder="Last Name" />
+                  <input
+                    className="border rounded-md px-2 border-gray-300"
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChange={(e) => {
+                      setLastName(e.target.value);
+                    }}
+                  />
                 </div>
               </div>
               <div className="flex">
+                <label>Email Address</label>
+                <input
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="flex">
+                <label>Address</label>
+                <input
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="Address"
+                  value={address}
+                  onChange={(e) => {
+                    setAddress(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="flex">
+                <label>Contact Number</label>
+                <input
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="Contact Number"
+                  value={contact}
+                  onChange={(e) => {
+                    setContact(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="flex">
                 <label>Gender</label>
-                <select>
-                  <option>Male</option>
-                  <option>Female</option>
+                <select
+                  value={gender}
+                  onChange={(e) => {
+                    setGender(e.target.value);
+                  }}
+                  className="border rounded-md px-2 border-gray-300"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
                 </select>
               </div>
               <div className="flex">
                 <label>Blood Type</label>
-                <select>
-                  <option>A+</option>
-                  <option>A-</option>
-                  <option>B+</option>
-                  <option>B-</option>
-                  <option>O+</option>
-                  <option>O-</option>
-                  <option>AB+</option>
-                  <option>AB-</option>
+                <select
+                  className="border rounded-md px-2 border-gray-300"
+                  value={bloodType}
+                  onChange={(e) => {
+                    setBloodType(e.target.value);
+                  }}
+                >
+                  <option value="">Select Blood Type</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
                 </select>
               </div>
               <div className="flex">
-                <label>Email Address</label>
-                <input placeholder="Email Address" />
-              </div>
-              <div className="flex">
-                <label>Contact Number</label>
-                <input placeholder="Contact Number" />
-              </div>
-              <div className="flex">
                 <label>Age</label>
-                <input placeholder="Age" />
+                <input
+                  type="number"
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="Age"
+                  value={age}
+                  onChange={(e) => {
+                    setAge(parseInt(e.target.value));
+                  }}
+                />
+              </div>
+              <div className="flex">
+                <label>Weight</label>
+                <input
+                  type="number"
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="Weight"
+                  value={weight}
+                  onChange={(e) => {
+                    setWeight(parseFloat(e.target.value));
+                  }}
+                />
               </div>
               <div className="flex">
                 <label>Senior ID</label>
-                <input placeholder="Senior ID" />
+                <input
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="Senior ID"
+                  value={seniorId}
+                  onChange={(e) => {
+                    setSeniorId(e.target.value);
+                  }}
+                />
               </div>
               <div className="flex flex-col">
                 <label>Allergies</label>
-                <textarea />
+                <textarea
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="Enter Allergies Here.."
+                  value={allergies}
+                  onChange={(e) => {
+                    setAllergies(e.target.value);
+                  }}
+                />
               </div>
               <PrimaryBtn type="submit">Submit</PrimaryBtn>
             </div>
