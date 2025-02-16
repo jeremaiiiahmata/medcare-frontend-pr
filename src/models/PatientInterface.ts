@@ -1,12 +1,14 @@
 export interface Patient {
-  doctor: string;
+  doctor: number;
   first_name: string;
   last_name: string;
   blood_type: string;
   email: string;
-  contactNum: string;
+  contact_number: string;
   age: number;
-  weight: DoubleRange;
-  gender: "Male" | "Female";
+  address: string;
+  weight: number;
+  gender: string;
   seniorId: string;
+  allergies?: string;
 }
