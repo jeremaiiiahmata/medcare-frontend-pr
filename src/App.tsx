@@ -6,6 +6,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
+import PrescriptionPage from "./pages/PrescriptionPage";
+import PrescriptionListPage from "./pages/PrescriptionListPage";
 import PatientDirectory from "./pages/PatientDirectory";
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
               <Route Component={PatientDirectory} path="/patient-directory" />
               <Route path="/create-patient" />
               <Route path="/create-prescription" />
+              <Route Component={PrescriptionPage} path="/prescription" />
+              <Route Component={PrescriptionListPage} path="/prescriptions-list" />
               <Route path="/create-preassessment" />
               <Route path="/edit-profile" />
             </Route>
