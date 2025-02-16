@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
+import PatientDirectory from "./pages/PatientDirectory";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Routes>
             <Route element={<PrivateRoute />}>
               <Route Component={Dashboard} path="/dashboard" />
+              <Route Component={PatientDirectory} path="/patient-directory" />
               <Route path="/create-patient" />
               <Route path="/create-prescription" />
               <Route path="/create-preassessment" />
