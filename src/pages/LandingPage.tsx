@@ -46,7 +46,8 @@ const HomePage = () => {
                     setEmail(e.target.value);
                   }}
                   placeholder="Email Address"
-                  className="border rounded-md p-1 border-gray-300"
+                  className="w-full border rounded-lg px-3 py-2 border-gray-300 shadow-sm 
+                  focus:outline-none focus:border-b-emerald-500 focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               <div className="flex flex-col ">
@@ -59,7 +60,8 @@ const HomePage = () => {
                   }}
                   type="password"
                   placeholder="Password"
-                  className="border rounded-md p-1 border-gray-300"
+                  className="w-full border rounded-lg px-3 py-2 border-gray-300 shadow-sm 
+                  focus:outline-none focus:border-b-emerald-500 focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
             </div>

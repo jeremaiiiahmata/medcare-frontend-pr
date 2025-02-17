@@ -4,9 +4,13 @@ import Tabular from "../components/Tabular";
 import { Patient } from "../models/PatientInterface";
 import AuthContext from "../context/AuthContext";
 import Modal from "../components/Modal";
+import useAxios from "../utils/UseAxios";
+import { jwtDecode } from 'jwt-decode'; // Importing jwtDecode to decode JWT tokens if needed
+
 
 const PatientDirectory = () => {
   const authContext = useContext(AuthContext);
+  const api = useAxios();
 
   if (!authContext) {
     throw new Error("PrivateRoute must be used within an AuthProvider");
@@ -14,12 +18,15 @@ const PatientDirectory = () => {
 
   const { authTokens, user } = authContext;
 
-  //temporary lang to
   if (!authTokens) {
     throw new Error("No tokens");
   } else if (!user) {
     throw new Error("No user");
   }
+
+  const decodedToken = jwtDecode<{ user_id: number }>(authTokens.access);
+  const userId = decodedToken.user_id; 
+  console.log("User ID from token:", userId);
 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -41,7 +48,7 @@ const PatientDirectory = () => {
     e.preventDefault();
 
     const newPatient: Patient = {
-      doctor: 1, // use id based on current user
+      doctor: userId, // use id based on current user
       first_name: firstName,
       last_name: lastName,
       email: email,
@@ -51,7 +58,7 @@ const PatientDirectory = () => {
       blood_type: bloodType,
       contact_number: contact,
       gender: gender,
-      seniorId: seniorId,
+      id_number: seniorId,
       weight: weight,
       allergies: allergies,
     };
@@ -96,14 +103,14 @@ const PatientDirectory = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/patients", {
+        const response = await api.get("http://127.0.0.1:8000/api/patients", {
           headers: {
             Authorization: `Bearer ${authTokens?.access}`,
           },
         });
 
-        const data = await response.json();
-
+        const data = await response.data;
+        console.log()
         setPatients(data.data);
       } catch (error) {
         console.log(error);

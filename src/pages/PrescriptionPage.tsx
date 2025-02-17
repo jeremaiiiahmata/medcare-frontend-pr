@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import useAxios from '../utils/UseAxios';
+import { Drug } from '../models/DrugInterface';
+import { ReportType } from '../models/ReportTypeInterface';
 
 
 const PrescriptionPage = () => {
@@ -27,33 +29,6 @@ const PrescriptionPage = () => {
         backgroundColor: "#f8d7da",
         marginTop: "15px"
     };
-
-    interface Drug {
-        id: number;
-        drug_name: string;
-        dosage: string;
-        amount: string;
-    }
-
-    interface DrugInteraction {
-        drug_a: string;
-        drug_b: string;
-        severity: string;
-        description: string;
-        management: string;
-    }
-    
-    interface DosageAdjustment {
-        drug_name: string;
-        reason: string;
-        recommended_action: string;
-    }
-    
-    interface ReportType {
-        potential_drug_interactions: DrugInteraction[];
-        dosage_adjustment_recommendations: DosageAdjustment[];
-        final_recommendation: string;
-    }
     
     const [report, setReport] = useState<ReportType | null>(null);    
     const [data, setData] = useState<Drug[]>([]);
@@ -64,7 +39,7 @@ const PrescriptionPage = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await api.post("/generate-report/");
+            const response = await api.post("/generate-report/?prescription_id=1");
             let rawData = response.data?.reply;
     
             // Ensure it's a string before processing

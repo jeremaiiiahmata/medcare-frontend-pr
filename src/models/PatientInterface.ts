@@ -9,6 +9,6 @@ export interface Patient {
   address: string;
   weight: number;
   gender: string;
-  seniorId: string;
+  id_number: string;
   allergies?: string;
 }
