@@ -28,7 +28,7 @@ const PrescriptionListPage = () => {
 
   return (
     <div>
-        Prescription Lists of Patient
+        Patient : {}
     </div>
   )
 }
