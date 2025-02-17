@@ -1,9 +1,9 @@
 export interface PrescriptionItem {
     id: number;
-    prescription: number; 
+    prescription: number;
     amount: string;
     drug_name: string;
     dosage: string;
     frequency: string;
-    notes?: string; 
+    notes?: string;
 }
