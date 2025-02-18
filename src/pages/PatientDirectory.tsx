@@ -4,9 +4,8 @@ import Tabular from "../components/Tabular";
 import { Patient } from "../models/PatientInterface";
 import AuthContext from "../context/AuthContext";
 import Modal from "../components/Modal";
+import SearchBar from "../components/SearchBar";
 import useAxios from "../utils/UseAxios";
-import { jwtDecode } from 'jwt-decode'; // Importing jwtDecode to decode JWT tokens if needed
-
 
 const PatientDirectory = () => {
   const authContext = useContext(AuthContext);
@@ -24,12 +23,9 @@ const PatientDirectory = () => {
     throw new Error("No user");
   }
 
-  const decodedToken = jwtDecode<{ user_id: number }>(authTokens.access);
-  const userId = decodedToken.user_id; 
-  console.log("User ID from token:", userId);
-
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
 
   //new patient usestates
   const [firstName, setFirstName] = useState<string>("");
@@ -48,13 +44,12 @@ const PatientDirectory = () => {
     e.preventDefault();
 
     const newPatient: Patient = {
-      doctor: userId, // use id based on current user
+      doctor: user.user_id, // use id based on current user
       first_name: firstName,
       last_name: lastName,
       email: email,
       age: age,
       address: address,
-
       blood_type: bloodType,
       contact_number: contact,
       gender: gender,
@@ -84,6 +79,7 @@ const PatientDirectory = () => {
 
       handleClear();
       setIsOpen(!open);
+      fetchPatients();
     } catch (error) {
       console.log(error);
     }
@@ -269,8 +265,12 @@ useEffect(() => {
         <></>
       )}
       <div className="w-full flex justify-between">
-        <div className="flex gap-4">
-          <div>Search Bar Here</div>
+        <div className="flex gap-4 items-center">
+          <SearchBar
+            placeholder="Search Patient..."
+            search={firstName}
+            setSearch={setFirstName}
+          />
           <div>Filter Here</div>
         </div>
         <PrimaryBtn
