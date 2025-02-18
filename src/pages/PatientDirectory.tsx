@@ -5,9 +5,11 @@ import { Patient } from "../models/PatientInterface";
 import AuthContext from "../context/AuthContext";
 import Modal from "../components/Modal";
 import SearchBar from "../components/SearchBar";
+import useAxios from "../utils/UseAxios";
 
 const PatientDirectory = () => {
   const authContext = useContext(AuthContext);
+  const api = useAxios();
 
   if (!authContext) {
     throw new Error("PrivateRoute must be used within an AuthProvider");
@@ -15,7 +17,6 @@ const PatientDirectory = () => {
 
   const { authTokens, user } = authContext;
 
-  //temporary lang to
   if (!authTokens) {
     throw new Error("No tokens");
   } else if (!user) {
@@ -52,7 +53,7 @@ const PatientDirectory = () => {
       blood_type: bloodType,
       contact_number: contact,
       gender: gender,
-      seniorId: seniorId,
+      id_number: seniorId,
       weight: weight,
       allergies: allergies,
     };

@@ -22,7 +22,7 @@ function App() {
               <Route path="/create-patient" />
               <Route path="/create-prescription" />
               <Route Component={PrescriptionPage} path="/prescription" />
-              <Route Component={PrescriptionListPage} path="/prescriptions-list" />
+              <Route Component={PrescriptionListPage} path="/prescription-list" />
               <Route path="/create-preassessment" />
               <Route path="/edit-profile" />
             </Route>
