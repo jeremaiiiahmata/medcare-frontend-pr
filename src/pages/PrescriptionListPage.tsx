@@ -1,6 +1,7 @@
 import {useContext, useEffect, useState } from "react";
 import { jwtDecode } from 'jwt-decode';
 import { Prescription } from '../models/PrescriptionInterface';
+import Spinner from "../components/Spinner";
 
 import useAxios from '../utils/UseAxios';
 import AuthContext from "../context/AuthContext";
@@ -38,7 +39,7 @@ const PrescriptionListPage = () => {
             try {
                 const response = await api.get(`/prescriptions/${patientId}`);
                 console.log("API Response:", response.data);
-                setPrescriptions(Array.isArray(response.data.data) ? response.data.data : []);
+                setPrescriptions(response.data.data);
             } catch (error) {
                 console.log(error);
                 setError("Something went wrong. Please try again.");
@@ -56,8 +57,15 @@ const PrescriptionListPage = () => {
 
   return (
     <>
-    {loading && <p>Loading...</p>}
-    {error && <p style={{ color: "red" }}>{error}</p>}
+    
+    {loading && 
+        <Spinner/>
+    }
+
+    {error && 
+        <p style={{ color: "red" }}>{error}</p>
+    }
+
     {prescriptions.length > 0 ? (
         prescriptions.map((prescription) => (
             <div key={prescription.id}>
@@ -69,6 +77,7 @@ const PrescriptionListPage = () => {
     ) : (
         !loading && <p>No prescriptions found.</p>
     )}
+    
     </>
   );
 }

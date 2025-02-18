@@ -77,8 +77,11 @@ const PatientDirectory = () => {
         throw new Error(`Error! status: ${response.status}`);
       }
 
-      const newData = response.json();
+      const newData = await response.json();
       console.log("New Patient added!", newData);
+      
+      fetchPatients();
+
       handleClear();
       setIsOpen(!open);
     } catch (error) {
@@ -100,25 +103,19 @@ const PatientDirectory = () => {
     setAddress("");
   };
 
-  useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const response = await api.get("http://127.0.0.1:8000/api/patients", {
-          headers: {
-            Authorization: `Bearer ${authTokens?.access}`,
-          },
-        });
-
+  const fetchPatients = async () => {
+    try {
+        const response = await api.get("/patients");
         const data = await response.data;
-        console.log()
         setPatients(data.data);
-      } catch (error) {
+    } catch (error) {
         console.log(error);
-      }
-    };
+    }
+};
 
-    fetchPatients();
-  }, [patients]);
+useEffect(() => {
+    fetchPatients(); // Initial data fetch
+}, []);
 
   return (
     <div className="h-full w-full p-7 flex justify-center flex-col">
