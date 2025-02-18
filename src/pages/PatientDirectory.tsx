@@ -4,6 +4,7 @@ import Tabular from "../components/Tabular";
 import { Patient } from "../models/PatientInterface";
 import AuthContext from "../context/AuthContext";
 import Modal from "../components/Modal";
+import SearchBar from "../components/SearchBar";
 
 const PatientDirectory = () => {
   const authContext = useContext(AuthContext);
@@ -23,6 +24,7 @@ const PatientDirectory = () => {
 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
 
   //new patient usestates
   const [firstName, setFirstName] = useState<string>("");
@@ -41,13 +43,12 @@ const PatientDirectory = () => {
     e.preventDefault();
 
     const newPatient: Patient = {
-      doctor: 1, // use id based on current user
+      doctor: user.user_id, // use id based on current user
       first_name: firstName,
       last_name: lastName,
       email: email,
       age: age,
       address: address,
-
       blood_type: bloodType,
       contact_number: contact,
       gender: gender,
@@ -74,6 +75,7 @@ const PatientDirectory = () => {
       console.log("New Patient added!", newData);
       handleClear();
       setIsOpen(!open);
+      fetchPatients();
     } catch (error) {
       console.log(error);
     }
@@ -93,25 +95,25 @@ const PatientDirectory = () => {
     setAddress("");
   };
 
+  const fetchPatients = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/patients", {
+        headers: {
+          Authorization: `Bearer ${authTokens?.access}`,
+        },
+      });
+
+      const data = await response.json();
+
+      setPatients(data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/patients", {
-          headers: {
-            Authorization: `Bearer ${authTokens?.access}`,
-          },
-        });
-
-        const data = await response.json();
-
-        setPatients(data.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     fetchPatients();
-  }, [patients]);
+  }, []);
 
   return (
     <div className="h-full w-full p-7 flex justify-center flex-col">
@@ -265,8 +267,12 @@ const PatientDirectory = () => {
         <></>
       )}
       <div className="w-full flex justify-between">
-        <div className="flex gap-4">
-          <div>Search Bar Here</div>
+        <div className="flex gap-4 items-center">
+          <SearchBar
+            placeholder="Search Patient..."
+            search={firstName}
+            setSearch={setFirstName}
+          />
           <div>Filter Here</div>
         </div>
         <PrimaryBtn
