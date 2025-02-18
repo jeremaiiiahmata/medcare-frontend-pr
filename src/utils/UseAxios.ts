@@ -19,6 +19,7 @@ const useAxios = (): AxiosInstance => {
   const axiosInstance = axios.create({
     baseURL,
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${authTokens?.access}`, //if there is authToken, access is granted.
     },
   });

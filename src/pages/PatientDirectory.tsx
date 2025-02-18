@@ -59,20 +59,20 @@ const PatientDirectory = () => {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/create-patient", {
-        method: "POST",
-        body: JSON.stringify(newPatient),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authTokens?.access}`,
-        },
-      });
+      const response = await api.post(
+        "http://127.0.0.1:8000/api/create-patient",
+        {
+          method: "POST",
+          body: JSON.stringify(newPatient),
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(`Error! status: ${response.status}`);
+      if (!response) {
+        throw new Error(`Error! status: ${response}`);
       }
 
-      const newData = response.json();
+      const newData = response.data;
+
       console.log("New Patient added!", newData);
       handleClear();
       setIsOpen(!open);
@@ -98,14 +98,9 @@ const PatientDirectory = () => {
 
   const fetchPatients = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/patients", {
-        headers: {
-          Authorization: `Bearer ${authTokens?.access}`,
-        },
-      });
+      const response = await api.get("http://127.0.0.1:8000/api/patients");
 
-      const data = await response.json();
-
+      const data = await response.data;
       setPatients(data.data);
     } catch (error) {
       console.log(error);
@@ -114,6 +109,7 @@ const PatientDirectory = () => {
 
   useEffect(() => {
     fetchPatients();
+    console.log(patients);
   }, []);
 
   return (
