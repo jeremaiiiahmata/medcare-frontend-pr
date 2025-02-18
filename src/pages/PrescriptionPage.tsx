@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import useAxios from '../utils/UseAxios';
 import { Drug } from '../models/DrugInterface';
 import { ReportType } from '../models/ReportTypeInterface';
+import Spinner from '../components/Spinner';
 
 
 const PrescriptionPage = () => {
@@ -38,19 +39,25 @@ const PrescriptionPage = () => {
 
 
     const handleSubmit = async () => {
+
+        setLoading(true);
+
         try {
             const response = await api.post("/generate-report/?prescription_id=1");
+
+
             let rawData = response.data?.reply;
     
             // Ensure it's a string before processing
             if (typeof rawData === "string") {
                 // Remove markdown syntax (backticks and "json" label)
                 rawData = rawData.replace(/^```json\n/, "").replace(/\n```$/, "");
-    
+                
                 // Parse JSON safely
                 const parsedData = JSON.parse(rawData);
                 setReport(parsedData);
                 console.log(parsedData);
+
 
             } else {
                 setReport(rawData);
@@ -59,6 +66,8 @@ const PrescriptionPage = () => {
 
         } catch (error) {
             console.log(`Error. ${error}`);
+        } finally {
+            setLoading(false);
         }
         
     }
@@ -99,6 +108,10 @@ const PrescriptionPage = () => {
         )}
 
     <button onClick={handleSubmit}>Generate Report</button>
+
+    {loading && (
+    <Spinner/>
+    )}
 
     <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
         <h2 style={{ textAlign: "center", color: "#333" }}>📋 Drug Interaction Report</h2>
