@@ -1,8 +1,8 @@
 export interface PreAssessment{
-    id:number;
-    doctor: number;
-    patient: number;
-    date_created: string;
+    id?:number;
+    doctor?: number;
+    patient?: number;
+    date_created?: string;
     heart_rate: string;
     temperature: string;
     chronic_conditions: string;

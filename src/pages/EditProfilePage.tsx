@@ -73,7 +73,6 @@ const [profile, setProfile] = useState<Profile>();
 
   return (
     <div>
-
         <h1>ID: {profile?.id}</h1>
         <p> First Name : {profile?.first_name}</p>
         <p> Middle Name : {profile?.middle_name}</p>

@@ -27,20 +27,20 @@ const RegisterForm = () => {
 
   return (
     <div className="h-full w-full">
-      <div className="rounded-lg shadow-lg p-4 h-full w-[30rem]">
+      <div className="rounded-lg shadow-lg p-4 h-full w-[30rem] ">
         <div className="relative flex justify-between items-center mb-4">
           <h1 className="absolute left-1/2 transform -translate-x-1/2 text-center font-bold text-green-900 text-2xl ">
             Register
           </h1>
           <Link to="/">
-            <IoMdArrowBack size={24} color="#0d542b" />
+            <IoMdArrowBack size={24} color="#03624C" />
           </Link>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
             <div className="flex flex-col">
-              <label className="text-green-900 text-lg font-semibold">
+              <label className="text-[#03624C] text-lg font-semibold">
                 Email
               </label>
               <input
@@ -49,11 +49,11 @@ const RegisterForm = () => {
                   setEmail(e.target.value);
                 }}
                 placeholder="Email Address"
-                className="border rounded-md p-1 border-gray-300 "
+                className="border rounded-sm p-1 border-gray-300 "
               />
             </div>
             <div className="flex flex-col ">
-              <label className="text-green-900 text-lg font-semibold">
+              <label className="text-[#03624C] text-lg font-semibold">
                 Username
               </label>
               <input
@@ -67,35 +67,35 @@ const RegisterForm = () => {
             </div>
 
             <div className="flex flex-col ">
-              <label className="text-green-900 text-lg font-semibold">
+              <label className="text-[#03624C] text-lg font-semibold">
                 Password
               </label>
               <input
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
-                type="text"
+                type="password"
                 placeholder="Password"
-                className="border rounded-md p-1 border-gray-300"
+                className="border rounded-sm p-1 border-gray-300"
               />
             </div>
 
             <div className="flex flex-col ">
-              <label className="text-green-900 text-lg font-semibold">
+              <label className="text-[#03624C] text-lg font-semibold">
                 Confirm Password
               </label>
               <input
                 onChange={(e) => {
                   setPasswordValidator(e.target.value);
                 }}
-                type="text"
+                type="password"
                 placeholder="Confirm Password"
-                className="border rounded-md p-1 border-gray-300"
+                className="border rounded-sm p-1 border-gray-300"
               />
             </div>
           </div>
           <div className=" flex gap-4 mt-10 justify-center">
-            <PrimaryBtn type="submit">Register</PrimaryBtn>
+            <button className="rounded-md bg-[#03624C] px-6 py-1.5 font-bold text-white" type="submit">Register</button>
           </div>
         </form>
       </div>

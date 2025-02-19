@@ -2,6 +2,7 @@ import {useContext, useEffect, useState } from "react";
 import { jwtDecode } from 'jwt-decode';
 import { Prescription } from '../models/PrescriptionInterface';
 import Spinner from "../components/Spinner";
+import PrescriptionTabular from "../components/PrescriptionTabular"; 
 
 import useAxios from '../utils/UseAxios';
 import AuthContext from "../context/AuthContext";
@@ -33,27 +34,26 @@ const PrescriptionListPage = () => {
       const userId = decodedToken.user_id; 
       console.log("User ID from token:", userId);
       console.log("Fetching from patient ID:", patientId);
+      
+      const fetchData = async () => {
+        try {
+            const response = await api.get(`/prescriptions/${patientId}`);
+            console.log("API Response:", response.data);
+            setPrescriptions(response.data.data);
+        } catch (error) {
+            console.log(error);
+            // setError("Something went wrong. Please try again.");
+            setPrescriptions([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await api.get(`/prescriptions/${patientId}`);
-                console.log("API Response:", response.data);
-                setPrescriptions(response.data.data);
-            } catch (error) {
-                console.log(error);
-                setError("Something went wrong. Please try again.");
-                setPrescriptions([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (patientId) {
             fetchData();
         }
-
-    }, [prescriptions]);
+    }, []);
 
   return (
     <>
@@ -67,13 +67,7 @@ const PrescriptionListPage = () => {
     }
 
     {prescriptions.length > 0 ? (
-        prescriptions.map((prescription) => (
-            <div key={prescription.id}>
-                <h1 className="font-bold">{prescription.title}</h1>
-                <p>{prescription.description || "No description available"}</p>
-                <p>Date: {prescription.date_created}</p>
-            </div>
-        ))
+         <PrescriptionTabular prescriptions={prescriptions} />
     ) : (
         !loading && <p>No prescriptions found.</p>
     )}
