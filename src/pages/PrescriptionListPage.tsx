@@ -1,8 +1,9 @@
 import {useContext, useEffect, useState } from "react";
 import { jwtDecode } from 'jwt-decode';
 import { Prescription } from '../models/PrescriptionInterface';
+import SearchBar from "../components/SearchBar";
 import Spinner from "../components/Spinner";
-import PrescriptionTabular from "../components/PrescriptionTabular"; 
+import PrescriptionTabular from "../components/PrescriptionTabular";
 
 import useAxios from '../utils/UseAxios';
 import AuthContext from "../context/AuthContext";
@@ -16,6 +17,7 @@ const PrescriptionListPage = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
     const [loading, setLoading] = useState(true);
+    const [title, setTitle] = useState("");
     const [error, setError] = useState("");
 
     if (!authContext) {
@@ -42,7 +44,6 @@ const PrescriptionListPage = () => {
             setPrescriptions(response.data.data);
         } catch (error) {
             console.log(error);
-            // setError("Something went wrong. Please try again.");
             setPrescriptions([]);
         } finally {
             setLoading(false);
@@ -56,23 +57,29 @@ const PrescriptionListPage = () => {
     }, []);
 
   return (
-    <>
-    
-    {loading && 
-        <Spinner/>
-    }
-
-    {error && 
-        <p style={{ color: "red" }}>{error}</p>
-    }
-
+    <div className='flex flex-1'>
     {prescriptions.length > 0 ? (
-         <PrescriptionTabular prescriptions={prescriptions} />
+        <div className="h-full w-full p-7 flex justify-center flex-col">
+        <div className="w-full flex justify-between">
+          <div className="flex gap-4">
+            <div>
+              <SearchBar
+            placeholder="Search Patient..."
+            search={title}
+            setSearch={setTitle}
+            />
+            </div>
+          </div>
+        </div>
+        <PrescriptionTabular prescriptions={prescriptions}/>
+        </div>
     ) : (
-        !loading && <p>No prescriptions found.</p>
+            <div className='flex items-center justify-center w-full h-full'>
+                <p className='p-10 text-6xl'>No Pre-assessments found.</p>
+        </div>
     )}
-    
-    </>
+</div>
+  
   );
 }
 

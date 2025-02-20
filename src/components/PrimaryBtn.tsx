@@ -11,7 +11,7 @@ const PrimaryBtn = ({ children, type, onClick }: Props) => {
     <button
       type={type}
       onClick={onClick}
-      className="h-8 rounded-lg border w-24 bg-green-900 text-white cursor-pointer hover:bg-green-800 transition-colors duration-200 ease-in-out"
+      className="h-8 w-auto px-4 rounded-lg border w-24 bg-[#03624C] hover:bg-[#2cc295] text-white cursor-pointer  transition-colors duration-200 ease-in-out"
     >
       {children}
     </button>

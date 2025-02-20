@@ -1,13 +1,23 @@
 import {useState, useEffect, useContext} from 'react'
+import { Link } from 'react-router-dom';
 import useAxios from '../utils/UseAxios';
 import AuthContext from "../context/AuthContext";
 import { jwtDecode } from 'jwt-decode';
 import { Profile } from '../models/ProfileInterface';
+import Swal from 'sweetalert2';
 
 const EditProfilePage = () => {
 
 const authContext = useContext(AuthContext);
 const api = useAxios();
+
+const [firstName, setFirstName] = useState("");
+const [lastName, setLastName] = useState("");
+const [middleName, setMiddleName] = useState("");
+const [specialization, setSpecialization] = useState("");
+const [contactNumber, setContactNumber] = useState("");
+const [officeAddress, setOfficeAddress] = useState("");
+const [bio, setBio] = useState("");
 
 const [profile, setProfile] = useState<Profile>();
 
@@ -27,25 +37,32 @@ const [profile, setProfile] = useState<Profile>();
   const userId = decodedToken.user_id; 
   console.log("User ID from token:", userId);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    // hard-coded values, wala pang form for this
     const newProfile: Profile = {
           id: userId,
-          first_name: "Joshua",
-          middle_name: "Butuyan",
-          last_name: "Mata",
-          specialization: "Computer Science",
-          contact_number: "09166327511",
-          office_address: "San Pedro, Laguna",
-          bio: "I love Programming!!!"
-        };
+          first_name: firstName,
+          middle_name: middleName,
+          last_name: lastName,
+          specialization: specialization,
+          contact_number: contactNumber,
+          office_address: officeAddress,
+          bio: bio
+      };
 
     try {
         const response = await api.put("/profile/edit", newProfile);
-    
         console.log(response);
+
         console.log("Profile has been updated successfully.");
+        Swal.fire({
+          title: "Profile updated!",
+          text: "Profile has been successfully updated.",
+          icon: "success",
+          confirmButtonColor: '#03624C',
+        });
+              
         fetchData();
 
     } catch (error) {
@@ -71,19 +88,148 @@ const [profile, setProfile] = useState<Profile>();
          fetchData();
   }, []);
 
-  return (
-    <div>
-        <h1>ID: {profile?.id}</h1>
-        <p> First Name : {profile?.first_name}</p>
-        <p> Middle Name : {profile?.middle_name}</p>
-        <p> Last Name : {profile?.last_name}</p>
-        <p> Specialization : {profile?.specialization}</p>
-        <p> Contact Number : {profile?.contact_number}</p>
-        <p> Office Address : {profile?.office_address}</p>
-        <p> Bio : {profile?.bio}</p>
-        <button onClick={handleSubmit}>Submit</button>
+  useEffect(() => {
+    if (profile) {
+      setFirstName(profile.first_name || "");
+      setMiddleName(profile.middle_name || "");
+      setLastName(profile.last_name || "");
+      setSpecialization(profile.specialization || "");
+      setContactNumber(profile.contact_number || "");
+      setOfficeAddress(profile.office_address || "");
+      setBio(profile.bio || "");
+    }
+  }, [profile]);
 
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-30">
+    <div>
+      <form className="max-w-3xl mx-auto my-8 py-20 sm:p-20" onSubmit={handleSubmit}>
+        <h3 className="font-semibold text-3xl sm:text-4xl my-5">Edit Profile</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              placeholder={profile?.first_name ? profile?.first_name : "First Name"}
+              value={firstName}
+                onChange={(e) => {
+                setFirstName(e.target.value);
+              }}
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all"
+            />
+          </div>
+    
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              placeholder={profile?.middle_name ? profile?.middle_name : "Middle Name"}
+              value={middleName}
+                onChange={(e) => {
+                setMiddleName(e.target.value);
+              }}
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all"
+            />
+          </div>
+    
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              placeholder={profile?.last_name ? profile?.last_name : "Last Name"}
+              value={lastName}
+                onChange={(e) => {
+                setLastName(e.target.value);
+              }}
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all"
+            />
+          </div>
+    
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              placeholder={profile?.specialization ? profile?.specialization : "Specialization"}
+              value={specialization}
+                onChange={(e) => {
+                setSpecialization(e.target.value);
+              }}
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all"
+            />
+          </div>
+    
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              placeholder={profile?.contact_number ? profile?.contact_number : "Contact Number"}
+              value={contactNumber}
+                onChange={(e) => {
+                setContactNumber(e.target.value);
+              }}
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all"
+            />
+          </div>
+    
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              placeholder={profile?.office_address ? profile?.office_address : "Office Address"}
+              value={officeAddress}
+                onChange={(e) => {
+                setOfficeAddress(e.target.value);
+              }}
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all"
+            />
+          </div>
+        </div>
+    
+        <div className="py-4">
+          <input
+            type="text"
+            placeholder={profile?.bio ? profile?.bio : "Bio"}
+            value={bio}
+                onChange={(e) => {
+                setBio(e.target.value);
+              }}
+            className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all"
+          />
+        </div>
+    
+        <div className="flex flex-col sm:flex-row justify-end">
+          <Link to ="/dashboard">
+          <button
+            type="button"
+            
+            className="py-2.5 mx-0 sm:mx-1 mt-2 sm:mt-0 w-full sm:w-20 text-center cursor-pointer bg-[#FF6C6C] hover:bg-[#ff6c6c] text-white rounded"
+          >Cancel
+          </button>
+          </Link>
+        
+          <button
+            type="submit"
+            className="py-2.5 mx-0 sm:mx-1 mt-2 sm:mt-0 w-full sm:w-20 text-center cursor-pointer bg-[#03624C] hover:bg-[#0B4539] text-white rounded"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
     </div>
+
+    <div>
+      <div className="max-w-lg mx-auto my-20 bg-[#ACCDC6] rounded-lg shadow-md px-5 py-15">
+        <img className="w-32 h-32 rounded-full mx-auto" src="https://picsum.photos/200" alt="Profile picture"/>
+          <h2 className="text-center text-2xl font-semibold mt-3">{firstName} {middleName.slice(0,1)}. {lastName}</h2>
+          <p className="text-center text-gray-600 mt-1">{specialization}</p>
+          <div className="flex justify-center mt-5">
+            <p className="text-[#03624C] hover:text-[#03624C] mx-3 font-semibold">{contactNumber}</p>
+            <p className="text-[#03624C] hover:text-[#03624C] mx-3 font-semibold">{officeAddress}</p>
+          </div>
+          <div className="mt-5 flex flex-col align-center items-center justify-center">
+            <h3 className="text-xl font-semibold ">Bio</h3>
+            <p className="text-gray-600 mt-2">{bio}</p>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+  
   )
 }
 

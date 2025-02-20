@@ -3,17 +3,18 @@ import useAxios from '../utils/UseAxios';
 import { PreAssessment } from '../models/PreAssessmentInterface'
 import PreAssessmentTabular from '../components/PreAssessmentTabular';
 import Modal from '../components/Modal';
+import SearchBar from '../components/SearchBar';
 import PrimaryBtn from '../components/PrimaryBtn';
 
 const PreAssesmentListPage = () => {
 
     const api = useAxios();
-    const patientId = 1 // hard-coded pa. get the patientID na clinick through props?
+    const patientId = 4 // hard-coded pa. get the patientID na clinick through props?
 
     const [preAssessments, setPreAssessments] = useState<PreAssessment[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
    
-
+    const [title, setTitle] = useState<string>("");
     const [heartRate, setHeartRate] = useState<string>("");
     const [temperature, setTemperature] = useState<string>("");
     const [unit, setUnit] = useState('°C');
@@ -28,7 +29,7 @@ const PreAssesmentListPage = () => {
     const addPreAssessment = async () => {
 
         const newPreassessment : PreAssessment = {
-
+            title: title,
             heart_rate: heartRate,
             temperature: combinedTemperature,
             chronic_conditions: chronicConditions,
@@ -68,6 +69,7 @@ const PreAssesmentListPage = () => {
     }
 
     const handleClear = () => {
+        setTitle("");
         setHeartRate("");
         setTemperature("");
         setChronicConditions("");
@@ -193,19 +195,24 @@ const PreAssesmentListPage = () => {
             )}
             <div className="w-full flex justify-between">
               <div className="flex gap-4">
-                <div>Search Bar Here</div>
-                <div>Filter Here</div>
-              </div>
-              <PrimaryBtn
+                <div>
+                  <SearchBar
+                placeholder="Search Patient..."
+                search={heartRate}
+                setSearch={setHeartRate}
+                />
+                </div>
+                <PrimaryBtn
                 type="button"
                 onClick={() => {
                   setIsOpen(!isOpen);
                 }}
-              >
+                  >
                 Add Patient
               </PrimaryBtn>
+              </div>
             </div>
-            <PreAssessmentTabular preassessments={preAssessments}/>
+            <PreAssessmentTabular preassessments={preAssessments} fetchData={fetchData}/>
             </div>
         ) : (
                 <div className='flex items-center justify-center w-full h-full'>

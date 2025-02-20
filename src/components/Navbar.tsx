@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
-import PrimaryBtn from "./PrimaryBtn";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -13,9 +12,9 @@ const Navbar = () => {
   const { logoutUser } = context;
 
   return (
-    <div className="h-18 w-full shadow-lg flex items-center justify-between px-2 bg-[#03624C]">
+    <div className="h-20 w-full shadow-lg flex items-center justify-between px-2 bg-[#03624C]">
       <div className="container-menu flex items-center justify-center gap-13 mx-4 text-white">
-      <img src="/medcare-logo.png" alt="" className="w-auto h-10"/>
+      <img src="/medcare-primary-logo.png" alt="" className="w-auto h-30 ml-5 object-contain"/>
 
         <Link to={"/dashboard"}>
           <h2 className="font-semibold">Dashboard</h2>

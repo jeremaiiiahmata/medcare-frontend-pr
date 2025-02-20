@@ -68,7 +68,7 @@ const LoginForm = () => {
           </div>
         </div>
         <div className="flex gap-4 mt-10 justify-center">
-          <button className="rounded-md bg-[#03624C] px-6 py-1.5 font-bold text-white cursor-pointer" type="submit">Login</button>
+          <button className="rounded-md bg-[#03624C] hover:bg-[#2cc295] px-6 py-1.5 font-bold text-white cursor-pointer" type="submit">Login</button>
         </div>
       </form>
     </div>
