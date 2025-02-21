@@ -103,7 +103,7 @@ const [profile, setProfile] = useState<Profile>();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-30">
     <div>
-      <form className="max-w-3xl mx-auto my-8 py-20 sm:p-20" onSubmit={handleSubmit}>
+      <form className="max-w-3xl mx-auto my-8 py-20 sm:p-20 " onSubmit={handleSubmit}>
         <h3 className="font-semibold text-3xl sm:text-4xl my-5">Edit Profile</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="relative flex items-center">
@@ -212,9 +212,9 @@ const [profile, setProfile] = useState<Profile>();
     </div>
 
     <div>
-      <div className="max-w-lg mx-auto my-20 bg-[#ACCDC6] rounded-lg shadow-md px-5 py-15">
+      <div className="max-w-lg mx-auto my-20 bg-[#2EA98C] rounded-lg shadow-md shadow-[#030F0F] px-5 py-15">
         <img className="w-32 h-32 rounded-full mx-auto" src="https://picsum.photos/200" alt="Profile picture"/>
-          <h2 className="text-center text-2xl font-semibold mt-3">{firstName} {middleName.slice(0,1)}. {lastName}</h2>
+          <h2 className="text-center text-2xl font-semibold mt-3">{firstName} {middleName ? `${middleName.slice(0,1).toUpperCase()}.` : ""} {lastName}</h2>
           <p className="text-center text-gray-600 mt-1">{specialization}</p>
           <div className="flex justify-center mt-5">
             <p className="text-[#03624C] hover:text-[#03624C] mx-3 font-semibold">{contactNumber}</p>

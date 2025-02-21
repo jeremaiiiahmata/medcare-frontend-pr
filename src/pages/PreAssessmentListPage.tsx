@@ -9,7 +9,7 @@ import PrimaryBtn from '../components/PrimaryBtn';
 const PreAssesmentListPage = () => {
 
     const api = useAxios();
-    const patientId = 4 // hard-coded pa. get the patientID na clinick through props?
+    const patientId = 1 // hard-coded pa. get the patientID na clinick through props?
 
     const [preAssessments, setPreAssessments] = useState<PreAssessment[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -28,8 +28,10 @@ const PreAssesmentListPage = () => {
 
     const addPreAssessment = async () => {
 
+      console.log("Adding Pre-Assessment")
+
         const newPreassessment : PreAssessment = {
-            title: title,
+            title: "Title Placeholder",
             heart_rate: heartRate,
             temperature: combinedTemperature,
             chronic_conditions: chronicConditions,
@@ -37,16 +39,13 @@ const PreAssesmentListPage = () => {
             complaint: complaint,
             notes: notes,
             symptoms: symptoms
-            
         }
         
         try {
-            const response = await api.post("/pre-assessment/create", newPreassessment, {
-                params: {patient_id : patientId}
-            });
+          const response = await api.post(`/pre-assessment/create?patient_id=${patientId}`, newPreassessment);
 
             console.log("Pre-assessment has been added successfully.");
-            console.log(response.status);
+            console.log(`Status ${response.status}`);
 
             handleClear();
             fetchData();
@@ -56,10 +55,10 @@ const PreAssesmentListPage = () => {
     }
 
     const fetchData = async () => {
+  
         try {
-            const response = await api.get("/pre-assessments", {  
-                params: {patient_id : patientId} //
-            })
+            const response = await api.get("pre-assessments/all");
+            console.log("Data Fetched.")
             setPreAssessments(response.data.data)
             console.log(preAssessments);     
 
@@ -193,6 +192,9 @@ const PreAssesmentListPage = () => {
             ) : ( 
               <></>
             )}
+            <div>
+              <h1 className="text-5xl font-bold py-5 w-fit">Pre-Assessments</h1>
+            </div>
             <div className="w-full flex justify-between">
               <div className="flex gap-4">
                 <div>

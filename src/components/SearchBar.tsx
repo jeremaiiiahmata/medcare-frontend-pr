@@ -8,7 +8,7 @@ interface Props {
 
 const SearchBar = ({ search, placeholder, setSearch }: Props) => {
   return (
-    <div className="h-full w-64 border border-gray-500 rounded-xl p-1 flex items-center gap-2">
+    <div className="h-full w-64 border border-gray-500 rounded-md p-1 flex items-center gap-2">
       <IoIosSearch size={24} color="#6a7282" />
       <input
         className="w-full h-full focus:outline-none"
