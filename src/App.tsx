@@ -11,6 +11,7 @@ import PrescriptionListPage from "./pages/PrescriptionListPage";
 import PatientDirectory from "./pages/PatientDirectory";
 import EditProfilePage from "./pages/EditProfilePage";
 import PreAssessmentListPage from "./pages/PreAssessmentListPage";
+import PreAssessmentPage from "./pages/PreAssessmentPage";
 
 function App() {
   return (
@@ -23,9 +24,10 @@ function App() {
               <Route Component={PatientDirectory} path="/patient-directory" />
               <Route path="/create-patient" />
               <Route path="/create-prescription" />
-              <Route Component={PrescriptionPage} path="/prescription" />
+              <Route Component={PrescriptionPage} path="/prescription/:id" />
               <Route Component={PrescriptionListPage} path="/prescription-list" />
-              <Route Component={PreAssessmentListPage}path="/preassessments" />
+              <Route Component={PreAssessmentPage}path="/preassessment/:id" />
+              <Route Component={PreAssessmentListPage}path="/preassessment-list" />
               <Route path="/create-preassessment" />
               <Route Component={EditProfilePage} path="/edit-profile" />
             </Route>

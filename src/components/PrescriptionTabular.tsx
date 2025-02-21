@@ -1,49 +1,175 @@
+import { Link } from "react-router-dom";
 import { Prescription } from "../models/PrescriptionInterface";
+import Swal from "sweetalert2";
+import useAxios from "../utils/UseAxios";
 
 interface Props {
   prescriptions: Prescription[];
+  fetchData: () => void;
 }
 
-const PrescriptionTabular = ({ prescriptions }: Props) => {
+const PrescriptionTabular = ({ prescriptions, fetchData }: Props) =>   {
+
+  const api = useAxios();
+
+  const handleDelete = async (index: number) => {
+      Swal.fire({
+        title: `Confirm Delete?`,
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: "Delete",
+        confirmButtonColor: "#F04444",
+        denyButtonColor: "#6F7D7D",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          Swal.fire("Prescription Deleted!", "", "success");
+          try {
+            const response = await api.delete(`/prescription/delete?prescription_id=${index}`);
+            console.log(response.status);
+            console.log(`Deteled ID : ${index}`);
+            fetchData();
+          } catch (error) {
+            console.log(`Error in deleting pre-assessment : ${error}`);
+          }
+        } else if (result.isDenied) {
+        }
+      });
+    };
+
+  
+
   return (
-    <div className="relative h-full w-full my-5 overflow-auto rounded-lg shadow-lg bg-white">
-      <table className="w-full table-fixed text-center rtl:text-right">
-        <thead className="bg-[#03624C]">
-          <tr>
-            <th className="px-6 py-4 text-white">Title</th>
-            <th className="px-6 py-4 text-white">Description</th>
-            <th className="px-6 py-4 text-white"></th>
-            
-          </tr>
-        </thead>
-        <tbody>
-          {prescriptions.map((prescription, index) => (
-            <tr
-              className="hover:bg-green-50 border border-gray-300 cursor-pointer transition-colors ease-in-out duration-300"
-              key={index}
-            >
-              <td className="px-6 py-4">
-                {prescription.title}
-              </td>
-
-              <td className="px-6 py-4">
-                {prescription.description}
-              </td>
-
-              <div className="flex justify-center items-center space-x-10 my-2">
-              <button className="bg-[#03624C] px-5 py-2 rounded-md text-white font-bold cursor-pointer">
-                Edit
-              </button>
-              <button className="bg-red-700 px-5 py-2 rounded-md text-white font-bold cursor-pointer">
-                Delete
-              </button>
-            </div>
-
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+   <div className="relative h-full w-full my-5 overflow-auto rounded-lg shadow-lg  bg-white">
+         <table className="w-full min-w-max table-auto text-left">
+           <thead className="bg-[#03624C] text-center">
+             <tr>
+               <th className="bg-blue-gray-50/50 px-6 py-4">
+                 <p className="block antialiased leading-none text-white font-semibold">
+                   Title
+                 </p>
+               </th>
+               <th className="bg-blue-gray-50/50 px-6 py-4">
+                 <p className="block antialiased leading-none text-white font-semibold">
+                   Description
+                 </p>
+               </th>
+               <th className="bg-blue-gray-50/50 px-6 py-4">
+                 <p className="block antialiased leading-none text-white font-semibold">
+                   Date Created
+                 </p>
+               </th>
+               <th className="bg-blue-gray-50/50 px-6 py-4">
+                 <p className="block antialiased leading-none text-white font-semibold text-center">
+                   Actions
+                 </p>
+               </th>
+             </tr>
+           </thead>
+           <tbody>
+             {prescriptions.map((prescription, index) => (
+               <tr key={index}>
+                 <td className="p-4 border-b border-blue-gray-">
+                   <div className="text-center">
+                     <p className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
+                       {prescription.title}
+                     </p>
+                   </div>
+                 </td>
+                 <td className="p-4 border-b border-blue-gray-50 text-center">
+                   <p className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-normal">
+                     {prescription.description}
+                   </p>
+                 </td>
+                 <td className="p-4 border-b border-blue-gray-50 text-center">
+                   <p className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-normal">
+                     {prescription.date_created}
+                   </p>
+                 </td>
+                 <td className="p-4 border-b border-blue-gray-50 text-center">
+                   <div className="inline-block">
+                     {prescription.id ? (
+                       <Link to={`/prescription/${prescription.id}`}>
+                         <button
+                           className="cursor-pointer relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs mx-1 text-gray-900 hover:bg-gray-500/70 active:bg-gray-500/90"
+                           type="button"
+                         >
+                           <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
+                             <svg
+                               className="w-6 h-6 text-gray-800 dark:text-black"
+                               aria-hidden="true"
+                               xmlns="http://www.w3.org/2000/svg"
+                               width="24"
+                               height="24"
+                               fill="none"
+                               viewBox="0 0 24 24"
+                             >
+                               <path
+                                 stroke="currentColor"
+                                 strokeLinecap="round"
+                                 strokeLinejoin="round"
+                                 strokeWidth="2"
+                                 d="M18 14v4.833A1.166 1.166 0 0 1 16.833 20H5.167A1.167 1.167 0 0 1 4 18.833V7.167A1.166 1.166 0 0 1 5.167 6h4.618m4.447-2H20v5.768m-7.889 2.121 7.778-7.778"
+                               />
+                             </svg>
+                           </span>
+                         </button>
+                       </Link>
+                     ) : (
+                       <span className="text-red-500">No ID</span>
+                     )}
+   
+                     <button
+                       className="cursor-pointer relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs mx-1 text-gray-900 hover:bg-gray-500/70 active:bg-gray-500/90"
+                       type="button"
+                     >
+                       <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
+                         <svg
+                           xmlns="http://www.w3.org/2000/svg"
+                           viewBox="0 0 24 24"
+                           fill="currentColor"
+                           aria-hidden="true"
+                           className="h-4 w-4"
+                         >
+                           <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z"></path>
+                         </svg>
+                       </span>
+                     </button>
+   
+                     <button
+                       className="cursor-pointer relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs mx-1 text-gray-900 hover:bg-gray-500/70 active:bg-gray-500/90"
+                       type="button"
+                       onClick={() =>
+                        prescription.id !== undefined &&
+                         handleDelete(prescription.id)
+                       }
+                     >
+                       <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
+                         <svg
+                           className="w-6 h-6 text-red-800 dark:text-red"
+                           aria-hidden="true"
+                           xmlns="http://www.w3.org/2000/svg"
+                           width="24"
+                           height="24"
+                           fill="none"
+                           viewBox="0 0 24 24"
+                         >
+                           <path
+                             stroke="currentColor"
+                             strokeLinecap="round"
+                             strokeLinejoin="round"
+                             strokeWidth="2"
+                             d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+                           />
+                         </svg>
+                       </span>
+                     </button>
+                   </div>
+                 </td>
+               </tr>
+             ))}
+           </tbody>
+         </table>
+       </div>
   );
 };
 

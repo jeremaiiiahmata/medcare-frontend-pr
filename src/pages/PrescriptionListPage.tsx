@@ -12,11 +12,10 @@ const PrescriptionListPage = () => {
 
     const authContext = useContext(AuthContext);
     const api = useAxios();
-    const patientId = 1; 
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState("");
     const [error, setError] = useState("");
 
@@ -35,11 +34,13 @@ const PrescriptionListPage = () => {
       const decodedToken = jwtDecode<{ user_id: number }>(authTokens.access);
       const userId = decodedToken.user_id; 
       console.log("User ID from token:", userId);
-      console.log("Fetching from patient ID:", patientId);
       
       const fetchData = async () => {
+
+        setLoading(true);
+
         try {
-            const response = await api.get(`/prescriptions/${patientId}`);
+            const response = await api.get(`/prescriptions/all`);
             console.log("API Response:", response.data);
             setPrescriptions(response.data.data);
         } catch (error) {
@@ -51,15 +52,16 @@ const PrescriptionListPage = () => {
     };
 
     useEffect(() => {
-        if (patientId) {
-            fetchData();
-        }
+      fetchData();  
     }, []);
 
   return (
     <div className='flex flex-1'>
     {prescriptions.length > 0 ? (
         <div className="h-full w-full p-7 flex justify-center flex-col">
+        <div>
+          <h1 className="text-5xl font-bold py-5 w-fit">Prescriptions</h1>
+        </div>
         <div className="w-full flex justify-between">
           <div className="flex gap-4">
             <div>
@@ -71,11 +73,11 @@ const PrescriptionListPage = () => {
             </div>
           </div>
         </div>
-        <PrescriptionTabular prescriptions={prescriptions}/>
+        <PrescriptionTabular prescriptions={prescriptions} fetchData={fetchData}/>
         </div>
     ) : (
             <div className='flex items-center justify-center w-full h-full'>
-                <p className='p-10 text-6xl'>No Pre-assessments found.</p>
+                <p className='p-10 text-6xl'>No Prescriptions found.</p>
         </div>
     )}
 </div>
