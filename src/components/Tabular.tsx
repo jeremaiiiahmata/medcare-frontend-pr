@@ -7,9 +7,9 @@ interface Props {
 
 const Tabular = ({ patients, setSelectedPatient }: Props) => {
   return (
-    <div className="relative h-full w-full overflow-auto rounded-lg shadow-lg bg-white">
-      <table className="w-full table-fixed text-left">
-        <thead className="bg-emerald-800">
+    <div className="relative h-full w-full my-5 overflow-auto rounded-lg shadow-lg bg-white">
+      <table className="w-full table-fixed text-center rtl:text-right">
+        <thead className="bg-[#03624C]">
           <tr>
             <th className="px-6 py-4 text-white">Name</th>
             <th className="px-6 py-4 text-white">Email</th>

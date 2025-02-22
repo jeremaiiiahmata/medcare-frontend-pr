@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import { useState, useContext } from "react";
-import PrimaryBtn from "./PrimaryBtn";
 import { IoMdArrowBack } from "react-icons/io";
 
 const LoginForm = () => {
@@ -41,7 +40,7 @@ const LoginForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col gap-5">
           <div className="flex flex-col">
-            <label className="text-green-900 text-lg font-semibold">
+            <label className="text-[#03624C] text-lg font-semibold">
               Email
             </label>
             <input
@@ -55,7 +54,7 @@ const LoginForm = () => {
           </div>
 
           <div className="flex flex-col ">
-            <label className="text-green-900 text-lg font-semibold">
+            <label className="text-[#03624C] text-lg font-semibold">
               Password
             </label>
             <input
@@ -68,8 +67,8 @@ const LoginForm = () => {
             />
           </div>
         </div>
-        <div className=" flex gap-4 mt-10 justify-center">
-          <PrimaryBtn type="submit">Login</PrimaryBtn>
+        <div className="flex gap-4 mt-10 justify-center">
+          <button className="rounded-md bg-[#03624C] hover:bg-[#2cc295] px-6 py-1.5 font-bold text-white cursor-pointer" type="submit">Login</button>
         </div>
       </form>
     </div>
