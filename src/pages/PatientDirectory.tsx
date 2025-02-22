@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState, useMemo } from "react";
 import PrimaryBtn from "../components/PrimaryBtn";
 import Tabular from "../components/Tabular";
 import { Patient } from "../models/PatientInterface";
@@ -103,6 +103,14 @@ const PatientDirectory = () => {
     setAllergies("");
     setAddress("");
   };
+
+  // Filter prescriptions based on the search term
+    const filteredPatient = useMemo(() => {
+      return patients.filter(patient =>
+        patient.first_name.toLowerCase().includes(firstName.toLowerCase())
+      );
+    }, [patients, firstName]);
+
   const fetchPatients = async () => {
     try {
       const response = await api.get("/patients");
@@ -119,6 +127,9 @@ const PatientDirectory = () => {
 
   return (
     <div className="h-full w-full p-7 flex justify-center flex-col">
+      <div>
+            <h1 className="text-5xl font-bold py-5 w-fit">Patients</h1>
+      </div>
       {isOpen && (
         <Modal title="Add Patient" setIsOpen={setIsOpen}>
         <div className="border rounded-full my-2"></div>
@@ -288,7 +299,6 @@ const PatientDirectory = () => {
             search={firstName}
             setSearch={setFirstName}
           />
-          <div>Filter Here</div>
         </div>
         <PrimaryBtn
           type="button"
@@ -299,7 +309,7 @@ const PatientDirectory = () => {
           Add Patient
         </PrimaryBtn>
       </div>
-      <Tabular patients={patients} setSelectedPatient={setSelectedPatient} />
+      <Tabular patients={filteredPatient} setSelectedPatient={setSelectedPatient} />
     </div>
   );
 };

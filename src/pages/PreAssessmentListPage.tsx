@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useMemo} from 'react'
 import useAxios from '../utils/UseAxios';
 import { PreAssessment } from '../models/PreAssessmentInterface'
 import PreAssessmentTabular from '../components/PreAssessmentTabular';
@@ -13,6 +13,8 @@ const PreAssesmentListPage = () => {
 
     const [preAssessments, setPreAssessments] = useState<PreAssessment[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    
+    const [firstName, setFirstName] = useState<string>("");
    
     const [title, setTitle] = useState<string>("");
     const [heartRate, setHeartRate] = useState<string>("");
@@ -67,6 +69,12 @@ const PreAssesmentListPage = () => {
         }
     }
 
+     const filteredAssessments = useMemo(() => {
+          return preAssessments.filter(preAssessment =>
+            preAssessment.patient?.first_name.toLowerCase().includes(firstName.toLowerCase())
+          );
+        }, [preAssessments, firstName]);
+
     const handleClear = () => {
         setTitle("");
         setHeartRate("");
@@ -84,7 +92,6 @@ const PreAssesmentListPage = () => {
 
   return (
     <div className='flex flex-1'>
-        {preAssessments.length > 0 ? (
             <div className="h-full w-full p-7 flex justify-center flex-col">
             {isOpen ? (
              <Modal title="Add Pre-Assessment" setIsOpen={setIsOpen}>
@@ -213,8 +220,8 @@ const PreAssesmentListPage = () => {
                 <div>
                   <SearchBar
                 placeholder="Search Patient..."
-                search={heartRate}
-                setSearch={setHeartRate}
+                search={firstName}
+                setSearch={setFirstName}
                 />
                 </div>
                 <PrimaryBtn
@@ -227,13 +234,8 @@ const PreAssesmentListPage = () => {
               </PrimaryBtn>
               </div>
             </div>
-            <PreAssessmentTabular preassessments={preAssessments} fetchData={fetchData}/>
+            <PreAssessmentTabular preassessments={filteredAssessments} fetchData={fetchData}/>
             </div>
-        ) : (
-                <div className='flex items-center justify-center w-full h-full'>
-                    <p className='p-10 text-6xl'>No Pre-assessments found.</p>
-            </div>
-        )}
     </div>
   )
 }

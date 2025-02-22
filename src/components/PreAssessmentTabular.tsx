@@ -43,6 +43,11 @@ const PreAssessmentTabular = ({ preassessments, fetchData }: Props) => {
       <table className="w-full min-w-max table-auto text-left">
         <thead className="bg-[#03624C] text-center">
           <tr>
+          <th className="bg-blue-gray-50/50 px-6 py-4">
+              <p className="block antialiased leading-none text-white font-semibold">
+                Patient Name
+              </p>
+            </th>
             <th className="bg-blue-gray-50/50 px-6 py-4">
               <p className="block antialiased leading-none text-white font-semibold">
                 Title
@@ -78,6 +83,13 @@ const PreAssessmentTabular = ({ preassessments, fetchData }: Props) => {
         <tbody>
           {preassessments.map((preassessment, index) => (
             <tr key={index}>
+              <td className="p-4 border-b border-blue-gray-">
+                <div className="text-center">
+                  <p className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
+                    {preassessment.patient?.first_name} {preassessment.patient?.last_name}
+                  </p>
+                </div>
+              </td>
               <td className="p-4 border-b border-blue-gray-">
                 <div className="text-center">
                   <p className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
