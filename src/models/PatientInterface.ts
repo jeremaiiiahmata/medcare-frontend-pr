@@ -11,4 +11,5 @@ export interface Patient {
   gender: string;
   id_number: string;
   allergies?: string;
+  id?: number;
 }

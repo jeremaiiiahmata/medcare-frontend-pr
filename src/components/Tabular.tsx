@@ -2,9 +2,10 @@ import { Patient } from "../models/PatientInterface";
 
 interface Props {
   patients: Patient[];
+  setSelectedPatient: (patient: Patient) => void;
 }
 
-const Tabular = ({ patients }: Props) => {
+const Tabular = ({ patients, setSelectedPatient }: Props) => {
   return (
     <div className="relative h-full w-full my-5 overflow-auto rounded-lg shadow-lg bg-white">
       <table className="w-full table-fixed text-center rtl:text-right">
@@ -21,6 +22,9 @@ const Tabular = ({ patients }: Props) => {
             <tr
               className="hover:bg-green-50 border border-gray-300 cursor-pointer transition-colors ease-in-out duration-300"
               key={index}
+              onClick={() => {
+                setSelectedPatient(patient);
+              }}
             >
               <td className="px-6 py-4">
                 {patient.first_name} {patient.last_name}

@@ -6,6 +6,7 @@ import AuthContext from "../context/AuthContext";
 import Modal from "../components/Modal";
 import SearchBar from "../components/SearchBar";
 import useAxios from "../utils/UseAxios";
+import SidePanel from "./SidePanel";
 
 const PatientDirectory = () => {
   const authContext = useContext(AuthContext);
@@ -24,6 +25,7 @@ const PatientDirectory = () => {
   }
 
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
 
@@ -78,7 +80,7 @@ const PatientDirectory = () => {
       fetchPatients();
 
       handleClear();
-      setIsOpen(!open);
+      setIsOpen(!isOpen);
       fetchPatients();
     } catch (error) {
       console.log(error);
@@ -98,7 +100,6 @@ const PatientDirectory = () => {
     setAllergies("");
     setAddress("");
   };
-
   const fetchPatients = async () => {
     try {
       const response = await api.get("/patients");
@@ -115,7 +116,7 @@ const PatientDirectory = () => {
 
   return (
     <div className="h-full w-full p-7 flex justify-center flex-col">
-      {isOpen ? (
+      {isOpen && (
         <Modal title="Add Patient" setIsOpen={setIsOpen}>
           <div className="border rounded-full my-2"></div>
           <form onSubmit={addPatient}>
@@ -261,8 +262,12 @@ const PatientDirectory = () => {
             </div>
           </form>
         </Modal>
-      ) : (
-        <></>
+      )}
+      {selectedPatient && (
+        <SidePanel
+          patient={selectedPatient}
+          setSelectedPatient={setSelectedPatient}
+        />
       )}
       <div className="w-full flex justify-between">
         <div className="flex gap-4 items-center">
@@ -276,13 +281,13 @@ const PatientDirectory = () => {
         <PrimaryBtn
           type="button"
           onClick={() => {
-            setIsOpen(!isOpen);
+            setIsOpen(true);
           }}
         >
           Add Patient
         </PrimaryBtn>
       </div>
-      <Tabular patients={patients} />
+      <Tabular patients={patients} setSelectedPatient={setSelectedPatient} />
     </div>
   );
 };
