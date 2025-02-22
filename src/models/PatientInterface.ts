@@ -7,7 +7,7 @@ export interface Patient {
   contact_number: string;
   age: number;
   address: string;
-  weight: number;
+  weight: string;
   gender: string;
   id_number: string;
   allergies?: string;

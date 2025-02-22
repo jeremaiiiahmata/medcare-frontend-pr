@@ -2,7 +2,7 @@ import { DrugInteraction } from "./DrugInteractionInterface";
 import { DosageAdjustment } from "./DosageAdjustmentInterface";
 
 export interface ReportType {
-    potential_drug_interactions: DrugInteraction[];
-    dosage_adjustment_recommendations: DosageAdjustment[];
+    interactions: DrugInteraction[];
+    dosage_adjustments: DosageAdjustment[];
     final_recommendation: string;
 }

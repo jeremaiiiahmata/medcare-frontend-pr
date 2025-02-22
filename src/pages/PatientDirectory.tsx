@@ -28,6 +28,7 @@ const PatientDirectory = () => {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
+  const [weightUnit, setWeightUnit] = useState("kg")
 
   //new patient usestates
   const [firstName, setFirstName] = useState<string>("");
@@ -41,6 +42,8 @@ const PatientDirectory = () => {
   const [weight, setWeight] = useState<number>(0);
   const [seniorId, setSeniorId] = useState<string>("");
   const [allergies, setAllergies] = useState<string>("");
+
+  const patientWeight = `${weight} ${weightUnit}`
 
   const addPatient = async (e: FormEvent) => {
     e.preventDefault();
@@ -56,7 +59,7 @@ const PatientDirectory = () => {
       contact_number: contact,
       gender: gender,
       id_number: seniorId,
-      weight: weight,
+      weight: patientWeight,
       allergies: allergies,
     };
 
@@ -118,73 +121,71 @@ const PatientDirectory = () => {
     <div className="h-full w-full p-7 flex justify-center flex-col">
       {isOpen && (
         <Modal title="Add Patient" setIsOpen={setIsOpen}>
-          <div className="border rounded-full my-2"></div>
-          <form onSubmit={addPatient}>
-            <div className="flex flex-col gap-6">
-              <div className="flex justify-between">
-                <div className="flex flex-col w-60">
-                  <label>First Name</label>
-                  <input
-                    className="border rounded-md px-2 border-gray-300"
-                    placeholder="First Name"
-                    value={firstName}
-                    onChange={(e) => {
-                      setFirstName(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="flex flex-col w-60">
-                  <label>Last Name</label>
-                  <input
-                    className="border rounded-md px-2 border-gray-300"
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChange={(e) => {
-                      setLastName(e.target.value);
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="flex">
-                <label>Email Address</label>
+        <div className="border rounded-full my-2"></div>
+        <form onSubmit={addPatient}>
+          <div className="flex flex-col gap-6">
+            {/* Row 1: First Name & Last Name */}
+            <div className="flex gap-4">
+              <div className="flex flex-col w-1/2">
+                <label>First Name</label>
                 <input
                   className="border rounded-md px-2 border-gray-300"
-                  placeholder="Email Address"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
-              <div className="flex">
-                <label>Address</label>
+              <div className="flex flex-col w-1/2">
+                <label>Last Name</label>
                 <input
                   className="border rounded-md px-2 border-gray-300"
-                  placeholder="Address"
-                  value={address}
-                  onChange={(e) => {
-                    setAddress(e.target.value);
-                  }}
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
               </div>
-              <div className="flex">
-                <label>Contact Number</label>
-                <input
-                  className="border rounded-md px-2 border-gray-300"
-                  placeholder="Contact Number"
-                  value={contact}
-                  onChange={(e) => {
-                    setContact(e.target.value);
-                  }}
-                />
-              </div>
-              <div className="flex">
+            </div>
+      
+            {/* Row 2: Email Address */}
+            <div className="flex flex-col">
+              <label>Email Address</label>
+              <input
+                className="border rounded-md px-2 border-gray-300"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+      
+            {/* Row 3: Address */}
+            <div className="flex flex-col">
+              <label>Address</label>
+              <input
+                className="border rounded-md px-2 border-gray-300"
+                placeholder="Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
+      
+            {/* Row 4: Contact Number */}
+            <div className="flex flex-col">
+              <label>Contact Number</label>
+              <input
+                className="border rounded-md px-2 border-gray-300"
+                placeholder="Contact Number"
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+              />
+            </div>
+      
+            {/* Row 5: Gender & Blood Type */}
+            <div className="flex gap-4">
+              <div className="flex flex-col w-1/2">
                 <label>Gender</label>
                 <select
                   value={gender}
-                  onChange={(e) => {
-                    setGender(e.target.value);
-                  }}
+                  onChange={(e) => setGender(e.target.value)}
                   className="border rounded-md px-2 border-gray-300"
                 >
                   <option value="">Select Gender</option>
@@ -192,14 +193,12 @@ const PatientDirectory = () => {
                   <option value="Female">Female</option>
                 </select>
               </div>
-              <div className="flex">
+              <div className="flex flex-col w-1/2">
                 <label>Blood Type</label>
                 <select
-                  className="border rounded-md px-2 border-gray-300"
                   value={bloodType}
-                  onChange={(e) => {
-                    setBloodType(e.target.value);
-                  }}
+                  onChange={(e) => setBloodType(e.target.value)}
+                  className="border rounded-md px-2 border-gray-300"
                 >
                   <option value="">Select Blood Type</option>
                   <option value="A+">A+</option>
@@ -212,56 +211,69 @@ const PatientDirectory = () => {
                   <option value="AB-">AB-</option>
                 </select>
               </div>
-              <div className="flex">
+            </div>
+      
+            {/* Row 6: Age & Weight */}
+            <div className="flex gap-4">
+              <div className="flex flex-col w-1/2">
                 <label>Age</label>
                 <input
                   type="number"
                   className="border rounded-md px-2 border-gray-300"
                   placeholder="Age"
                   value={age}
-                  onChange={(e) => {
-                    setAge(parseInt(e.target.value));
-                  }}
+                  onChange={(e) => setAge(parseInt(e.target.value))}
                 />
               </div>
-              <div className="flex">
+              <div className="flex flex-col w-1/2">
                 <label>Weight</label>
-                <input
-                  type="number"
-                  className="border rounded-md px-2 border-gray-300"
-                  placeholder="Weight"
-                  value={weight}
-                  onChange={(e) => {
-                    setWeight(parseFloat(e.target.value));
-                  }}
-                />
+                <div className="flex">
+                  <input
+                    type="number"
+                    className="border rounded-l-md px-2 border-gray-300 w-full"
+                    placeholder="Weight"
+                    value={weight}
+                    onChange={(e) => setWeight(parseFloat(e.target.value))}
+                  />
+                  <select
+                    value={weightUnit}
+                    onChange={(e) => setWeightUnit(e.target.value)}
+                    className="border rounded-r-md px-2 border-gray-300 w-24"
+                  >
+                    <option value="kg">kg</option>
+                    <option value="lb">lb</option>
+                  </select>
+                </div>
               </div>
-              <div className="flex">
-                <label>Senior ID</label>
-                <input
-                  className="border rounded-md px-2 border-gray-300"
-                  placeholder="Senior ID"
-                  value={seniorId}
-                  onChange={(e) => {
-                    setSeniorId(e.target.value);
-                  }}
-                />
-              </div>
-              <div className="flex flex-col">
-                <label>Allergies</label>
-                <textarea
-                  className="border rounded-md px-2 border-gray-300"
-                  placeholder="Enter Allergies Here.."
-                  value={allergies}
-                  onChange={(e) => {
-                    setAllergies(e.target.value);
-                  }}
-                />
-              </div>
-              <PrimaryBtn type="submit">Submit</PrimaryBtn>
             </div>
-          </form>
-        </Modal>
+      
+            {/* Row 7: Senior ID */}
+            <div className="flex flex-col">
+              <label>Senior ID</label>
+              <input
+                className="border rounded-md px-2 border-gray-300"
+                placeholder="Senior ID"
+                value={seniorId}
+                onChange={(e) => setSeniorId(e.target.value)}
+              />
+            </div>
+      
+            {/* Row 8: Allergies */}
+            <div className="flex flex-col">
+              <label>Allergies</label>
+              <textarea
+                className="border rounded-md px-2 py-2 border-gray-300"
+                placeholder="Enter Allergies Here.."
+                value={allergies}
+                onChange={(e) => setAllergies(e.target.value)}
+              />
+            </div>
+      
+            {/* Submit Button */}
+            <PrimaryBtn type="submit">Submit</PrimaryBtn>
+          </div>
+        </form>
+      </Modal>      
       )}
       {selectedPatient && (
         <SidePanel

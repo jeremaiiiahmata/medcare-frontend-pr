@@ -87,108 +87,121 @@ const PreAssesmentListPage = () => {
         {preAssessments.length > 0 ? (
             <div className="h-full w-full p-7 flex justify-center flex-col">
             {isOpen ? (
-              <Modal title="Add Pre-Assessment" setIsOpen={setIsOpen}>
-                <div className="border rounded-full my-2"></div>
-                <form onSubmit={addPreAssessment}>
-                  <div className="flex flex-col gap-6">
-                    <div className="flex justify-between">
-                      <div className="flex flex-col w-60">
-                        <label>Heart Rate</label>
-                        <input
-                          className="border rounded-md px-2 border-gray-300"
-                          placeholder="Heart Rate"
-                          value={heartRate}
-                          onChange={(e) => {
-                            setHeartRate(e.target.value);
-                          }}
-                        />
-                      </div>
-                      <div className="flex flex-col w-60">
-                        <label>Temperature</label>
-                        <div className='flex'>
-                            <input
-                            type="number"
-                            className="border rounded-md px-2 border-gray-300 w-20"
-                            placeholder="Temperature"
-                            value={temperature}
-                            onChange={(e) => {
-                                setTemperature(e.target.value);
-                            }}
-                            />
-                            <select
-                            value={unit}
-                            onChange={(e) => setUnit(e.target.value)}
-                            className="border rounded-md px-2 border-gray-300 w-20"
-                            >
-                            <option value="°C">°C</option>
-                            <option value="°F">°F</option>
-                            </select>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <label>Chronic Conditions</label>
-                      <input
-                        className="border rounded-md px-2 border-gray-300"
-                        placeholder="Chronic Conditions"
-                        value={chronicConditions}
-                        onChange={(e) => {
-                          setChronicConditions(e.target.value);
-                        }}
-                      />
-                    </div>
-                    <div className="flex">
-                      <label>Smoking History</label>
-                      <input
-                        className="border rounded-md px-2 border-gray-300"
-                        placeholder="Smoking History"
-                        value={smokingHistory}
-                        onChange={(e) => {
-                          setSmokingHistory(e.target.value);
-                        }}
-                      />
-                    </div>
-                    <div className="flex">
-                      <label>Complaint</label>
-                      <input
-                        className="border rounded-md px-2 border-gray-300"
-                        placeholder="Complaint"
-                        value={complaint}
-                        onChange={(e) => {
-                          setComplaint(e.target.value);
-                        }}
-                      />
-                    </div>
-                    <div className="flex">
-                      <label>Notes</label>
-                      <input
-                        className="border rounded-md px-2 border-gray-300"
-                        placeholder='Notes'
-                        value={notes}
-                        onChange={(e) => {
-                          setNotes(e.target.value);
-                        }}
-                      />
-                    </div>
-                    <div className="flex">
-                      <label>Symptoms</label>
-                      <input
-                        className="border rounded-md px-2 border-gray-300"
-                        placeholder="Symptoms"
-                        value={symptoms}
-                        onChange={(e) => {
-                          setSymptoms(e.target.value);
-                        }}
-                        
-                      >
-                      </input>
-                    </div>
-                    <div className='flex justify-end gap-2 mx-4 my-2'>
-                        <button className='bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium' type="submit">Submit</button>
-                    </div>
-                  </div>
-                </form>
-              </Modal>
+             <Modal title="Add Pre-Assessment" setIsOpen={setIsOpen}>
+             <div className="border rounded-full my-2"></div>
+             <form onSubmit={addPreAssessment}>
+               <div className="flex flex-col gap-6">
+                 {/* Row 1: Heart Rate & Temperature */}
+                 <div className="flex justify-between gap-4">
+                   <div className="flex flex-col w-60">
+                     <label>Heart Rate</label>
+                     <div className="flex">
+                       <input
+                         className="border rounded-l-md px-2 border-gray-300 w-full"
+                         placeholder="Heart Rate"
+                         value={heartRate}
+                         onChange={(e) => setHeartRate(e.target.value)}
+                       />
+                       <span className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2">
+                         bpm
+                       </span>
+                     </div>
+                   </div>
+                   <div className="flex flex-col w-60">
+                     <label>Temperature</label>
+                     <div className="flex">
+                       <input
+                         type="number"
+                         className="border rounded-md px-2 border-gray-300 w-20"
+                         placeholder="Temperature"
+                         value={temperature}
+                         onChange={(e) => setTemperature(e.target.value)}
+                       />
+                       <select
+                         value={unit}
+                         onChange={(e) => setUnit(e.target.value)}
+                         className="border rounded-md px-2 border-gray-300 w-20"
+                       >
+                         <option value="°C">°C</option>
+                         <option value="°F">°F</option>
+                       </select>
+                     </div>
+                   </div>
+                 </div>
+           
+                 {/* Row 2: Chronic Conditions */}
+                 <div className="flex flex-col">
+                   <label>Chronic Conditions</label>
+                   <input
+                     className="border rounded-md px-2 border-gray-300"
+                     placeholder="Chronic Conditions"
+                     value={chronicConditions}
+                     onChange={(e) => setChronicConditions(e.target.value)}
+                   />
+                 </div>
+           
+                 {/* Row 3: Smoking History with dropdown */}
+                 <div className="flex flex-col">
+                   <label>Smoking History</label>
+                   <select
+                     value={smokingHistory}
+                     onChange={(e) => setSmokingHistory(e.target.value)}
+                     className="border rounded-md px-2 border-gray-300"
+                   >
+                     <option value="">Select Smoking Habit</option>
+                     <option value="Never">Never</option>
+                     <option value="Former">Former</option>
+                     <option value="Current">Current</option>
+                     <option value="Occasional">Occasional</option>
+                   </select>
+                 </div>
+           
+                 {/* Row 4: Complaint */}
+                 <div className="flex flex-col">
+                   <label>Complaint</label>
+                   <textarea
+                     className="border rounded-md px-2 py-2 border-gray-300 h-24"
+                     placeholder="Complaint"
+                     value={complaint}
+                     onChange={(e) => setComplaint(e.target.value)}
+                   />
+                 </div>
+           
+                 {/* Row 5: Notes */}
+                 <div className="flex flex-col">
+                   <label>Notes</label>
+                   <textarea
+                     className="border rounded-md px-2 py-2 border-gray-300 h-24"
+                     placeholder="Notes"
+                     value={notes}
+                     onChange={(e) => setNotes(e.target.value)}
+                   />
+                 </div>
+           
+                 {/* Row 6: Symptoms */}
+                 <div className="flex flex-col">
+                   <label>Symptoms</label>
+                   <textarea
+                     className="border rounded-md px-2 py-2 border-gray-300 h-24"
+                     placeholder="Symptoms"
+                     value={symptoms}
+                     onChange={(e) => setSymptoms(e.target.value)}
+                   />
+                 </div>
+           
+                 {/* Submit Button */}
+                 <div className="flex justify-end gap-2 mx-4 my-2">
+                   <button
+                     className="bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium"
+                     type="submit"
+                   >
+                     Submit
+                   </button>
+                 </div>
+               </div>
+             </form>
+           </Modal>
+            
             ) : ( 
               <></>
             )}
