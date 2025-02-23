@@ -1,5 +1,6 @@
 export interface DosageAdjustment {
-    drug_name: string;
+    drug: string;
     reason: string;
-    recommended_action: string;
+    current: string;
+    recommended: string;
 }

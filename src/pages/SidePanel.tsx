@@ -115,7 +115,17 @@ const SidePanel = ({ patient, setSelectedPatient }: Props) => {
           <div className="bg-amber-200 flex flex-auto h-full"></div>
         </div>
       </div>
-    </Modal>
+      {/* Tabs */}
+      <div className="rounded-lg shadow-lg w-1/3 flex-auto p-4 flex flex-col gap-2">
+        <div className="flex justify-center items-center gap-5 text-sm font-semibold">
+          <label className="hover:text-emerald-800">Medical Details</label>
+          <label className="hover:text-emerald-800">Prescriptions</label>
+          <label className="hover:text-emerald-800">Preassessment</label>
+        </div>
+        <div className="bg-amber-200 flex flex-auto"></div>
+      </div>
+    </div>
+  </Modal>
   );
 };
 

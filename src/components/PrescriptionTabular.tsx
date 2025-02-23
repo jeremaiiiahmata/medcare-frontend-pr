@@ -45,6 +45,11 @@ const PrescriptionTabular = ({ prescriptions, fetchData }: Props) =>   {
              <tr>
                <th className="bg-blue-gray-50/50 px-6 py-4">
                  <p className="block antialiased leading-none text-white font-semibold">
+                 Patient
+                 </p>
+               </th>
+               <th className="bg-blue-gray-50/50 px-6 py-4">
+                 <p className="block antialiased leading-none text-white font-semibold">
                    Title
                  </p>
                </th>
@@ -71,7 +76,14 @@ const PrescriptionTabular = ({ prescriptions, fetchData }: Props) =>   {
                  <td className="p-4 border-b border-blue-gray-">
                    <div className="text-center">
                      <p className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
-                       {prescription.title}
+                     {prescription.patient.first_name} {prescription.patient.last_name}
+                     </p>
+                   </div>
+                 </td>
+                 <td className="p-4 border-b border-blue-gray-">
+                   <div className="text-center">
+                     <p className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
+                     {prescription.title}
                      </p>
                    </div>
                  </td>
@@ -120,8 +132,7 @@ const PrescriptionTabular = ({ prescriptions, fetchData }: Props) =>   {
    
                      <button
                        className="cursor-pointer relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs mx-1 text-gray-900 hover:bg-gray-500/70 active:bg-gray-500/90"
-                       type="button"
-                     >
+                       type="button">
                        <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
                          <svg
                            xmlns="http://www.w3.org/2000/svg"
@@ -138,11 +149,7 @@ const PrescriptionTabular = ({ prescriptions, fetchData }: Props) =>   {
                      <button
                        className="cursor-pointer relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs mx-1 text-gray-900 hover:bg-gray-500/70 active:bg-gray-500/90"
                        type="button"
-                       onClick={() =>
-                        prescription.id !== undefined &&
-                         handleDelete(prescription.id)
-                       }
-                     >
+                       onClick={() =>prescription.id !== undefined && handleDelete(prescription.id)}>
                        <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
                          <svg
                            className="w-6 h-6 text-red-800 dark:text-red"
@@ -151,8 +158,7 @@ const PrescriptionTabular = ({ prescriptions, fetchData }: Props) =>   {
                            width="24"
                            height="24"
                            fill="none"
-                           viewBox="0 0 24 24"
-                         >
+                           viewBox="0 0 24 24">
                            <path
                              stroke="currentColor"
                              strokeLinecap="round"

@@ -23,7 +23,9 @@ const Modal = ({ title, children, setIsOpen }: Props) => {
         </div>
         {children}
       </div>
+      {children}
     </div>
+  </div>
   );
 };
 

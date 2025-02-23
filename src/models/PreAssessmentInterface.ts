@@ -1,7 +1,9 @@
+import { Patient } from "./PatientInterface";
+
 export interface PreAssessment{
     id?:number;
+    patient?: Patient;
     doctor?: number;
-    patient?: number;
     title?: string;
     date_created?: string;
     heart_rate: string;
@@ -11,4 +13,5 @@ export interface PreAssessment{
     complaint: string;
     notes: string;
     symptoms: string;
+    prescription?: number;
 }
