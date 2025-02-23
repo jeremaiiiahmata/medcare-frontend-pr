@@ -5,6 +5,7 @@ import { MdModeEdit, MdOutlineMail, MdOutlineDelete } from "react-icons/md";
 import { BsTelephone } from "react-icons/bs";
 import ProfilePicture from "../components/ProfilePicture";
 import RedButton from "../components/RedButton";
+import useAxios from "../utils/UseAxios";
 
 interface Props {
   patient: Patient;
@@ -12,6 +13,33 @@ interface Props {
 }
 
 const SidePanel = ({ patient, setSelectedPatient }: Props) => {
+  const api = useAxios();
+
+  const deletePatient = async (patient: Patient) => {
+    try {
+      const response = await api.delete(
+        `/patient/delete?patient_id=${patient.id}`
+      );
+
+      if (response.status === 200) {
+        console.log(`Patient ${patient.id} successfully deleted`);
+        setSelectedPatient(null);
+      } else {
+        console.log("Delete failed", response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchPrescriptions = async () => {
+    try {
+      const response = api.get("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Modal
       setIsOpen={() => {
@@ -39,7 +67,7 @@ const SidePanel = ({ patient, setSelectedPatient }: Props) => {
                 <RedButton
                   type="button"
                   onClick={() => {
-                    console.log("delete");
+                    deletePatient(patient);
                   }}
                 >
                   <MdOutlineDelete size={20} />
@@ -78,13 +106,13 @@ const SidePanel = ({ patient, setSelectedPatient }: Props) => {
           </div>
         </div>
         {/* Tabs */}
-        <div className="rounded-lg shadow-lg w-1/3 flex-auto p-4 h-full flex flex-col gap-2">
-          <div className="flex justify-center items-center gap-5 text-sm font-semiboldx">
+        <div className="rounded-lg shadow-lg w-1/3 flex-auto p-4 flex flex-col gap-2">
+          <div className="flex justify-center items-center gap-5 text-sm font-semibold">
             <label className="hover:text-emerald-800">Medical Details</label>
             <label className="hover:text-emerald-800">Prescriptions</label>
-            <label className="hover:text-emerald-800">Preassessment</label>
+            <label className="hover:text-emerald-800">Pre-assessment</label>
           </div>
-          <div className="bg-amber-200 flex flex-auto"></div>
+          <div className="bg-amber-200 flex flex-auto h-full"></div>
         </div>
       </div>
     </Modal>

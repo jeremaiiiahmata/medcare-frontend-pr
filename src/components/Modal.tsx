@@ -10,7 +10,7 @@ interface Props {
 const Modal = ({ title, children, setIsOpen }: Props) => {
   return (
     <div className="inset-0 items-center justify-center flex h-full w-full bg-black/70 absolute z-10">
-      <div className="bg-white h-full w-[48rem] p-4 rounded-lg flex flex-col gap-4">
+      <div className="bg-white h-auto w-auto max-w-full p-4 rounded-lg flex flex-col gap-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">{title}</h2>
           <IoIosClose
