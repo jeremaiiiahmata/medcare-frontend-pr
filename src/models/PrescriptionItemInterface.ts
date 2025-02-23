@@ -1,5 +1,5 @@
 export interface PrescriptionItem {
-    id: number;
+    id?: number;
     prescription: number;
     amount: string;
     drug_name: string;

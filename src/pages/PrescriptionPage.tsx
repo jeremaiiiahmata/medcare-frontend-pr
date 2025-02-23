@@ -6,15 +6,28 @@ import Spinner from "../components/Spinner";
 import { useParams } from "react-router-dom";
 import { Prescription } from "../models/PrescriptionInterface";
 import Swal from "sweetalert2";
+import { PrescriptionItem } from "../models/PrescriptionItemInterface";
+import Modal from "../components/Modal";
+import PrimaryBtn from "../components/PrimaryBtn";
 
 const PrescriptionPage = () => {
+  const api = useAxios();
+
   const { id } = useParams();
+
   const [report, setReport] = useState<ReportType | null>(null);
-  const [drug, setDrugs] = useState<Drug[]>([]);
+  const [drug, setDrugs] = useState<PrescriptionItem[]>([]);
   const [prescription, setPrescription] = useState<Prescription>();
   const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
-  const api = useAxios();
+
+  const [drugName, setDrugName] = useState<string>("");
+  const [dosage, setDosage] = useState<string>("");
+  const [frequency, setFrequency] = useState<string>("");
+  const [amount, setAmount] = useState<string>("");
+  const [notes, setNotes] = useState<string>("") || "N/A";
+
 
   const generateReport = async () => {
     setIsGeneratingReport(true); // Start showing spinner
@@ -67,13 +80,27 @@ const PrescriptionPage = () => {
       console.log("Deleted!");
   }
 
+  const addPrescriptionItem = async () => {
+
+    const newItem : PrescriptionItem = {
+      prescription: Number(id),
+      amount: amount,
+      drug_name: drugName,
+      dosage: dosage,
+      frequency: frequency,
+      notes: notes,
+    }
+
+    const response = await api.post(`prescription-item/add?prescription_id=${id}`, newItem)
+    console.log("Prescription item has been successfully added!");
+  }
+
   const fetchPrescriptions = async () => {
     try {
       const response = await api.get(`/prescription-items/${id}`);
-      setDrugs(Array.isArray(response.data.data) ? response.data.data : []);
+      setDrugs(response.data.data);
     } catch (error) {
       console.log(error);
-      setDrugs([]);
     } finally {
       setLoading(false);
     }
@@ -97,7 +124,114 @@ const PrescriptionPage = () => {
 
   return (
     <div className="max-w-screen-3xl mx-auto px-5">
-      {loading && <Spinner />}
+    {loading && <Spinner />}
+    {isOpen && (
+        <Modal title="Add Pre-Assessment" setIsOpen={setIsOpen}>
+        <div className="border rounded-full my-2"></div>
+        <form onSubmit={addPrescriptionItem}>
+          <div className="flex flex-col gap-6">
+             {/* Row 1: Drug Name & Amount */}
+             <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label htmlFor="drug_name" className="text-sm font-medium">
+                  Drug Name
+                </label>
+                <input
+                  type="text"
+                  id="drug_name"
+                  name="drug_name"
+                  className="border rounded p-2"
+                  placeholder="Enter drug name"
+                  onChange={(e) => {
+                    setDrugName(e.target.value);
+                  }}
+                  required
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="amount" className="text-sm font-medium">
+                  Amount
+                </label>
+                <input
+                  type="text"
+                  id="amount"
+                  name="amount"
+                  className="border rounded p-2"
+                  placeholder="Enter amount"
+                  onChange={(e) => {
+                    setAmount(e.target.value);
+                  }}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Row 2: Dosage & Frequency */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label htmlFor="dosage" className="text-sm font-medium">
+                  Dosage
+                </label>
+                <input
+                  type="text"
+                  id="dosage"
+                  name="dosage"
+                  className="border rounded p-2"
+                  placeholder="Enter dosage"
+                  onChange={(e) => {
+                    setDosage(e.target.value);
+                  }}
+                  required
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="frequency" className="text-sm font-medium">
+                  Frequency
+                </label>
+                <input
+                  type="text"
+                  id="frequency"
+                  name="frequency"
+                  className="border rounded p-2"
+                  placeholder="Enter frequency"
+                  onChange={(e) => {
+                    setFrequency(e.target.value);
+                  }}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Row 3: Notes (optional) */}
+            <div className="flex flex-col">
+              <label htmlFor="notes" className="text-sm font-medium">
+                Notes (optional)
+              </label>
+              <textarea
+                id="notes"
+                name="notes"
+                className="border rounded p-2"
+                placeholder="Enter any additional notes"
+                onChange={(e) => {
+                  setNotes(e.target.value);
+                }}
+                rows={3}
+              ></textarea>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end gap-2 mx-4 my-2">
+              <button
+                className="bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium"
+                type="submit"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </form>
+      </Modal>
+      )}
 
       {/* Title and Date */}
       <h1 className="text-4xl font-bold mt-5">Title: {prescription?.title}</h1>
@@ -111,8 +245,8 @@ const PrescriptionPage = () => {
         {/* Left Side - Prescription List (35% width) */}
         <div className="col-span-4 bg-[#E7E7E7] shadow-lg rounded-lg p-5 overflow-auto">
           <div className="flex justify-between items-center align-middle">
-            <h3 className="text-2xl font-bold m-3">Prescription List</h3>
-            <button className="mr-3 mt-3 mb-3 p-2 bg-amber-400 hover:bg-amber-500 cursor-pointer">
+            <h3 className="text-3xl font-bold">Prescription List</h3>
+            <button className="mr-3 mt-3 mb-3 p-2 bg-amber-400 hover:bg-amber-500 cursor-pointer" onClick={() => setIsOpen(true)}>
               Add Medication
             </button>
           </div>
@@ -128,6 +262,7 @@ const PrescriptionPage = () => {
                     <h1 className="font-semibold">Drug Name: {drug.drug_name}</h1>
                     <h3>Dosage: {drug.dosage}</h3>
                     <h3>Amount: {drug.amount}</h3>
+                    <h3>Frequency: {drug.frequency}</h3>
                   </div>
                   {/* Right Side: Buttons */}
                   <div className="flex items-center gap-2">
@@ -204,11 +339,11 @@ const PrescriptionPage = () => {
                     key={index}
                     className="border-l-4 border-yellow-500 bg-yellow-100 p-3 mb-3 rounded-md"
                   >
-                    <p className="font-semibold">
-                      🩺 {interaction.drug_a} & {interaction.drug_b}
+                    <p className="font-bold text-2xl">
+                     {interaction.drug_a} + {interaction.drug_b}
                     </p>
                     <p>
-                      <strong>Severity:</strong>
+                      <strong>Severity: </strong>
                       <span
                         className={
                           interaction.severity === "Major"
@@ -239,7 +374,7 @@ const PrescriptionPage = () => {
                     key={index}
                     className="border-l-4 border-blue-500 bg-blue-100 p-3 mb-3 rounded-md"
                   >
-                    <p className="font-semibold">🔹 {adjustment.drug}</p>
+                    <p className="font-bold text-2xl">{adjustment.drug}</p>
                     <p>
                       <strong>Reason:</strong>{" "} {adjustment.reason}
                     </p>
@@ -257,7 +392,7 @@ const PrescriptionPage = () => {
             </div>
 
             {/* Final Recommendation */}
-            <div className="bg-[#D9D9D9] shadow-lg rounded-lg p-5">
+            <div className="bg-[#E7E7E7] shadow-lg rounded-lg p-5">
               <h3 className="text-2xl font-bold mb-3">Final Recommendation</h3>
               {report?.final_recommendation && (
                 <div className="border border-red-500 bg-red-100 p-4 rounded-md">
