@@ -78,6 +78,7 @@ const PatientDirectory = () => {
       }
 
       const newData = await response.json();
+
       console.log("New Patient added!", newData);
 
       fetchPatients();
@@ -123,7 +124,7 @@ const PatientDirectory = () => {
 
   useEffect(() => {
     fetchPatients(); // Initial data fetch
-  }, []);
+  }, [patients]);
 
   return (
     <div className="h-full w-full p-7 flex justify-center flex-col">
