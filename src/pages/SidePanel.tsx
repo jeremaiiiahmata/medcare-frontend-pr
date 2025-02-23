@@ -6,6 +6,9 @@ import { BsTelephone } from "react-icons/bs";
 import ProfilePicture from "../components/ProfilePicture";
 import RedButton from "../components/RedButton";
 import useAxios from "../utils/UseAxios";
+import { Prescription } from "../models/PrescriptionInterface";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 interface Props {
   patient: Patient;
@@ -15,7 +18,11 @@ interface Props {
 const SidePanel = ({ patient, setSelectedPatient }: Props) => {
   const api = useAxios();
 
-  const deletePatient = async (patient: Patient) => {
+  const [patientPrescriptions, setPatientPrescriptions] = useState<
+    Prescription[]
+  >([]);
+
+  const deletePatient = async () => {
     try {
       const response = await api.delete(
         `/patient/delete?patient_id=${patient.id}`
@@ -34,11 +41,19 @@ const SidePanel = ({ patient, setSelectedPatient }: Props) => {
 
   const fetchPrescriptions = async () => {
     try {
-      const response = api.get("/");
+      const response = await api.get(`/prescriptions/${patient.id}`);
+      const prescriptions = await response.data;
+
+      setPatientPrescriptions(prescriptions.data);
+      console.log(patientPrescriptions);
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchPrescriptions();
+  }, []);
 
   return (
     <Modal
@@ -61,13 +76,13 @@ const SidePanel = ({ patient, setSelectedPatient }: Props) => {
                   }}
                   type="button"
                 >
-                  <MdModeEdit size={16} />
+                  {/* <MdModeEdit size={16} /> */}
                   Edit
                 </PrimaryBtn>
                 <RedButton
                   type="button"
                   onClick={() => {
-                    deletePatient(patient);
+                    deletePatient;
                   }}
                 >
                   <MdOutlineDelete size={20} />
@@ -106,13 +121,32 @@ const SidePanel = ({ patient, setSelectedPatient }: Props) => {
           </div>
         </div>
         {/* Tabs */}
-        <div className="rounded-lg shadow-lg w-1/3 flex-auto p-4 flex flex-col gap-2">
+        <div className="w-1/3 flex-auto  flex flex-col gap-2">
           <div className="flex justify-center items-center gap-5 text-sm font-semibold">
             <label className="hover:text-emerald-800">Medical Details</label>
             <label className="hover:text-emerald-800">Prescriptions</label>
             <label className="hover:text-emerald-800">Pre-assessment</label>
           </div>
-          <div className="bg-amber-200 flex flex-auto h-full"></div>
+          <div className="border border-gray-300 rounded-md flex flex-auto h-full p-2 flex-col gap-2 overflow-y-auto">
+            {patientPrescriptions.length > 0 ? (
+              patientPrescriptions.map((prescription, index) => (
+                <Link to={`/prescription/${prescription.id}`} key={index}>
+                  <div className="bg-emerald-50 shadow-md w-full p-2 transition-all duration-150 hover:border-emerald-300 rounded-md border border-transparent hover:border">
+                    <h2 className="font-semibold">Prescription Title: </h2>
+                    {prescription.title}
+                    <h2 className="font-semibold">Date Created:</h2>
+                    {prescription.date_created}
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="h-full w-full flex justify-center items-center">
+                <h2 className="text-lg font-semibold text-emerald-800/60">
+                  Patient has no prescriptions
+                </h2>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </Modal>
