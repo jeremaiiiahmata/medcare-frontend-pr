@@ -14,7 +14,6 @@ const PrescriptionPage = () => {
   const [prescription, setPrescription] = useState<Prescription>();
   const [loading, setLoading] = useState(true);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
-  const [error, setError] = useState("");
   const api = useAxios();
 
   const generateReport = async () => {
@@ -62,6 +61,7 @@ const PrescriptionPage = () => {
                 console.log(`Error in deleting pre-assessment : ${error}`);
               }
             } else if (result.isDenied) {
+              console.log("Delete cancelled.")
             }
           });
       console.log("Deleted!");
@@ -109,7 +109,7 @@ const PrescriptionPage = () => {
       <div className="grid grid-cols-12 gap-6 mt-5 h-screen">
         
         {/* Left Side - Prescription List (35% width) */}
-        <div className="col-span-4 bg-[#D9D9D9] shadow-lg rounded-lg p-5 overflow-auto">
+        <div className="col-span-4 bg-[#E7E7E7] shadow-lg rounded-lg p-5 overflow-auto">
           <div className="flex justify-between items-center align-middle">
             <h3 className="text-2xl font-bold m-3">Prescription List</h3>
             <button className="mr-3 mt-3 mb-3 p-2 bg-amber-400 hover:bg-amber-500 cursor-pointer">
@@ -117,10 +117,7 @@ const PrescriptionPage = () => {
             </button>
           </div>
 
-          {error ? (
-            <p className="text-red-500">{error}</p>
-          ) : (
-            drug.map((drug) => (
+          {drug.map((drug) => (
               <div
                 key={drug.id}
                 className="border p-3 rounded-md shadow-sm my-2 bg-white"
@@ -179,7 +176,7 @@ const PrescriptionPage = () => {
                 </div>
               </div>
             ))
-          )}
+          }
         </div>
 
         {/* Right Side - Conditional Display */}
@@ -193,7 +190,7 @@ const PrescriptionPage = () => {
           <div className="col-span-8 flex flex-col gap-6">
             
             {/* Drug-Drug Interactions */}
-            <div className="bg-[#D9D9D9] shadow-lg rounded-lg p-5">
+            <div className="bg-[#E7E7E7] shadow-lg rounded-lg p-5">
               <h3 className="text-2xl font-bold">Drug-Drug Interactions</h3>
               <button
                 className="bg-[#03624C] my-3 text-white px-4 py-2 rounded-md hover:bg-[#024534] transition"
@@ -234,7 +231,7 @@ const PrescriptionPage = () => {
             </div>
 
             {/* Dosage Recommendations */}
-            <div className="bg-[#D9D9D9] shadow-lg rounded-lg p-5">
+            <div className="bg-[#E7E7E7] shadow-lg rounded-lg p-5">
               <h3 className="text-2xl font-bold mb-3">Dosage Recommendations</h3>
               {report?.dosage_adjustments?.map(
                 (adjustment, index) => (
