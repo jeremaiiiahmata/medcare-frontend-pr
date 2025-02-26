@@ -10,11 +10,12 @@ import { Prescription } from "../models/PrescriptionInterface";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { PreAssessment } from "../models/PreAssessmentInterface";
+import Swal from "sweetalert2";
 
 interface Props {
   patient: Patient;
   setSelectedPatient: (value: Patient | null) => void;
-  fetchPatients: () => void;
+  fetchPatients: (offset?: number) => void;
 }
 
 const SidePanel = ({ patient, setSelectedPatient, fetchPatients}: Props) => {
@@ -116,22 +117,31 @@ const SidePanel = ({ patient, setSelectedPatient, fetchPatients}: Props) => {
 
   // Delete Patient
   const deletePatient = async () => {
-    try {
-      const response = await api.delete(`/patient/delete?patient_id=${patient.id}`);
-
-      if (response.status === 200) {
-        console.log(`Patient ${patient.id} successfully deleted`);
-  
-        // Update the table by re-fetching patients
-        fetchPatients();
-  
-        // Close the patient details side panel
-        setSelectedPatient(null);
-      }
-
-    } catch (error) {
-      console.log(`Error in deleting patient : ${error}`);
-    }
+    Swal.fire({
+                title: `Confirm Delete?`,
+                showDenyButton: true,
+                showCancelButton: false,
+                confirmButtonText: "Delete",
+                confirmButtonColor: "#F04444",
+                denyButtonColor: "#6F7D7D",
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  Swal.fire("Prescription Item Deleted!", "", "success");
+                  try {
+                    const response = await api.delete(`/patient/delete?patient_id=${patient.id}`);
+                    if (response.status === 200) {
+                      console.log(`Patient ${patient.id} successfully deleted`);
+                      fetchPatients();
+                      setSelectedPatient(null);
+                    }
+                  } catch (error) {
+                    console.log(`Error in deleting patient : ${error}`);
+                  }
+                } else if (result.isDenied) {
+                  console.log("Delete cancelled.")
+                }
+              });
+          console.log("Deleted!");
   };
 
   // Fetch Prescriptions

@@ -27,6 +27,8 @@ const Tabular = ({
           <thead className="bg-[#03624C] text-left">
             <tr>
               <th className="px-4 py-4 text-white">Name</th>
+              <th className="px-4 py-4 text-white">Contact Number</th>
+              <th className="px-4 py-4 text-white">Age</th>
               <th className="px-4 py-4 text-white">Blood Type</th>
               <th className="px-4 py-4 text-white">Gender</th>
             </tr>
@@ -41,7 +43,7 @@ const Tabular = ({
                 }}
               >
                 <td className="px-4 py-2 border-r border-gray-300">
-                  <h2>
+                  <h2 className="font-semibold">
                     {patient.first_name} {patient.last_name}
                   </h2>
                   <p className="text-gray-600 text-xs uppercase">
@@ -49,9 +51,17 @@ const Tabular = ({
                   </p>
                 </td>
                 <td className="px-4 py-2 border-r border-gray-300">
+                  {patient.contact_number}
+                </td>
+                <td className="px-4 py-2 border-r border-gray-300">
+                  {patient.age}
+                </td>
+                <td className="px-4 py-2 border-r border-gray-300">
                   {patient.blood_type}
                 </td>
-                <td className="px-4 py-2">{patient.gender}</td>
+                <td className="px-4 py-2">
+                  {patient.gender}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -39,7 +39,7 @@ const PrescriptionListPage = () => {
   // Filter prescriptions based on the search term
   const filteredPrescriptions = useMemo(() => {
     return prescriptions.filter(prescription =>
-      prescription.patient.first_name.toLowerCase().includes(title.toLowerCase())
+      prescription.patient?.first_name.toLowerCase().includes(title.toLowerCase())
     );
   }, [prescriptions, title]);
 
@@ -50,17 +50,15 @@ const PrescriptionListPage = () => {
           <div>
             <h1 className="text-5xl font-bold py-5 w-fit">Prescriptions</h1>
           </div>
-          <div className="w-full flex justify-between">
-            <div className="flex gap-4">
-              <div>
-                <SearchBar
-                  placeholder="Search Patient..."
-                  search={title}
-                  setSearch={setTitle}
-                />
-              </div>
-            </div>
+          <div className="w-full flex justify-start gap-4 py-2">
+          <div className="flex gap-4 items-center">
+            <SearchBar
+              placeholder="Search Patient..."
+              search={title}
+              setSearch={setTitle}
+            />
           </div>
+        </div>
           <PrescriptionTabular
             prescriptions={filteredPrescriptions}
             fetchData={fetchData}
