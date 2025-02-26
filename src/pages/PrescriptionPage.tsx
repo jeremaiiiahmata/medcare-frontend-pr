@@ -3,7 +3,7 @@ import useAxios from "../utils/UseAxios";
 import { Drug } from "../models/DrugInterface";
 import { ReportType } from "../models/ReportTypeInterface";
 import Spinner from "../components/Spinner";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Prescription } from "../models/PrescriptionInterface";
 import Swal from "sweetalert2";
 import { PrescriptionItem } from "../models/PrescriptionItemInterface";
@@ -124,6 +124,18 @@ const PrescriptionPage = () => {
 
   return (
     <div className="max-w-screen-3xl mx-auto px-5">
+
+    {prescription?.id == null && (
+       <div className="flex items-center justify-center h-screen">
+       <div className="flex flex-col items-center justify-center">
+         <h1 className="font-bold text-6xl">No Prescription found</h1>
+         <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+           Create Prescription
+         </button>
+       </div>
+     </div>
+    )}
+
     {loading && <Spinner />}
     {isOpen && (
         <Modal title="Add Pre-Assessment" setIsOpen={setIsOpen}>
@@ -238,6 +250,10 @@ const PrescriptionPage = () => {
       <h2 className="text-xl font-semibold my-1">
         Date Created: {prescription?.date_created}
       </h2>
+
+      <Link to={`/preassessment/${prescription?.preassessment?.id}`}>
+        <button> View Linked Pre-Asssessment </button>
+      </Link>
 
       {/* Layout: Grid with Left & Right Sections */}
       <div className="grid grid-cols-12 gap-6 mt-5 h-screen">
