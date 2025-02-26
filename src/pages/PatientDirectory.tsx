@@ -7,6 +7,7 @@ import Modal from "../components/Modal";
 import SearchBar from "../components/SearchBar";
 import useAxios from "../utils/UseAxios";
 import SidePanel from "./SidePanel";
+import { PaginatedResult } from "../models/PaginationInterface";
 
 const PatientDirectory = () => {
   const authContext = useContext(AuthContext);
@@ -27,7 +28,7 @@ const PatientDirectory = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [weightUnit, setWeightUnit] = useState("kg")
+  const [weightUnit, setWeightUnit] = useState("kg");
 
   //new patient usestates
   const [firstName, setFirstName] = useState<string>("");
@@ -46,8 +47,15 @@ const PatientDirectory = () => {
   const [allergies, setAllergies] = useState<string>("");
 
   const [search, setSearch] = useState<string>("");
- 
   const patientWeight = `${weight} ${weightUnit}`
+
+  //pagination
+  const [total, setTotal] = useState<number>(0);
+  const [nextPage, setNextPage] = useState<string | null>(null);
+  const [previousPage, setPreviousPage] = useState<string | null>(null);
+  const [offset, setOffset] = useState<number>(0);
+
+  const patientWeight = `${weight} ${weightUnit}`;
 
   const addPatient = async (e: FormEvent) => {
     e.preventDefault();
@@ -76,11 +84,11 @@ const PatientDirectory = () => {
       console.log(response.data);
       console.log("New Patient added!");
 
-      fetchPatients();
+      fetchPatients(offset);
 
       handleClear();
       setIsOpen(!isOpen);
-
+      fetchPatients(offset);
     } catch (error) {
       console.log(error);
     }
@@ -106,27 +114,34 @@ const PatientDirectory = () => {
       );
     }, [patients, search]);
 
-  const fetchPatients = async () => {
+  const fetchPatients = async (offset: number) => {
     try {
-      const response = await api.get("/patients");
+      const response = await api.get<PaginatedResult<Patient>>(
+        `/patients?limit=${7}&offset=${offset}`
+      );
       const data = await response.data;
       setPatients(() => data.data); 
+      console.log(data);
+      setPatients(data.results);
+      setNextPage(data.next);
+      setPreviousPage(data.previous);
+      setTotal(data.count);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchPatients(); // Initial data fetch
-  }, []);
+    fetchPatients(offset); // Initial data fetch
+  }, [offset]);
 
   return (
-    <div className="h-full w-full p-7 flex justify-center flex-col">
+    <div className="h-full w-full px-5 flex justify-center flex-col">
       <div>
-            <h1 className="text-5xl font-bold py-5 w-fit">Patients</h1>
+        <h1 className="text-5xl font-bold py-5 w-fit">Patients</h1>
       </div>
       {isOpen && (
-        <Modal title="Add Patient" setIsOpen={setIsOpen}>
+         <Modal title="Add Patient" setIsOpen={setIsOpen}>
         <div className="border rounded-full my-2"></div>
         <form onSubmit={addPatient}>
           <div className="flex flex-col gap-6">
@@ -334,7 +349,15 @@ const PatientDirectory = () => {
           Add Patient
         </PrimaryBtn>
       </div>
-      <Tabular patients={filteredPatient} setSelectedPatient={setSelectedPatient} />
+      <Tabular
+        next={nextPage}
+        previous={previousPage}
+        totalCount={total}
+        setOffset={setOffset}
+        offset={offset}
+        patients={filteredPatient}
+        setSelectedPatient={setSelectedPatient}
+      />
     </div>
   );
 };
