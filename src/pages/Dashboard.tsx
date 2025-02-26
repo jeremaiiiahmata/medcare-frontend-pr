@@ -62,7 +62,7 @@ const Dashboard = () => {
                 Most Common <strong>Symptom</strong> <br />
               </p>
               <p className="bg-emerald-700 text-5xl text-white inline-block rounded-xl mt-12 px-8 py-2">
-                <strong>{dashboard?.most_common_symptoms.symptom ? dashboard?.most_common_symptoms.symptom : "None"}</strong>
+                <strong>None</strong>
               </p>
             </div>
             <div className="bg-white rounded-xl shadow-lg px-6 py-4 w-4/12">

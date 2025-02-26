@@ -9,7 +9,6 @@ export interface DashboardData {
     inactive_patients: number;
     doctor_workload: { doctor: string; prescriptions: number; assessments: number }[];
     common_drug_interactions: { drug_a: string; drug_b: string; count: number }[];
-    most_common_symptoms: Symptom;
     average_patient_age: number;
     monthly_prescription_trend: { month: string; count: number }[];
     top_diagnosed_conditions: { condition: string; count: number }[];

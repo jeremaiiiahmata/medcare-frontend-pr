@@ -39,6 +39,8 @@ const PreAssessmentPage = () => {
   }, [])
 
   return (
+    <>
+    {preAssessment ? (
     <div className="max-w-screen-3xl mx-auto px-5">
       {/* Layout: Grid with Left & Right Sections */}
       <div className="grid grid-cols-12 gap-6 mt-5 h-screen">
@@ -62,7 +64,7 @@ const PreAssessmentPage = () => {
             {/* Header row with Pre-Assessment and Button */}
             <div className="flex items-center justify-between px-5">
               <h1 className="text-5xl font-bold">Pre-Assessment</h1>
-              <Link to="/prescription/2">
+              <Link to={`/prescription/${preAssessment.prescription}`}>
                 <button className="p-2 bg-amber-500 rounded">
                   View Linked Prescription
                 </button>
@@ -72,30 +74,46 @@ const PreAssessmentPage = () => {
             {/* Content area that takes up the remaining space */}
             <div className="flex-1 p-5 mt-5 mr-5 ml-5 mb-5 bg-[#E7E7E7] shadow-lg rounded-lg">
               {/* Your content here */}
-              <div className="flex justify-between p-5 my-5">
+              <div className="flex justify-between px-5">
+                <div>
+                  <h2 className="font-semibold text-2xl">Heart Rate : </h2>
+                  <p>
+                    {preAssessment?.heart_rate}
+                  </p>
+                </div>
+
+                <div>
+                  <h2 className="font-semibold text-2xl">Temperature : </h2>
+                  <p>
+                    {preAssessment?.temperature}
+                  </p>
+                </div>                           
+              </div>
+              <div className="flex flex-col px-5 my-5">
+              <h2 className="font-semibold text-2xl">Chronic Conditions : </h2>
                 <p>
-                  Heart Rate : 
-                </p>
-                <p>
-                  Temperature :
+                  {preAssessment?.chronic_conditions}
                 </p>
               </div>
-              <div className="flex justify-between p-5 my-5">
-                <p>
-                  Chronic Conditions : 
-                </p>
+              <div className="flex justify-between px-5 my-5 h-[10-rem]">
+                <div>
+                  <h2 className="font-semibold text-2xl">Smoking History : </h2>
+                  <p>
+                    {preAssessment?.smoking_history}
+                  </p>
+                </div>
+
+                <div>
+                  <h2 className="font-semibold text-2xl">Complaint : </h2>
+                  <p>
+                    {preAssessment?.complaint}
+                  </p>
+                </div>                           
               </div>
-              <div className="flex justify-between p-5 my-5">
-                <p>
-                  Smoking History : 
-                </p>
-              </div>
-              <div className="flex justify-between p-5 my-5">
-                <p>
-                  Complaint : 
-                </p>
-                <p>
-                  Notes :
+              <div className="flex flex-col px-5 my-5 h-[10rem]">
+                <h2 className="font-semibold text-2xl">Notes : </h2>
+                <p className="w-full h-full my-2">
+                  {preAssessment?.notes}
                 </p>
               </div>
             </div>
@@ -103,6 +121,17 @@ const PreAssessmentPage = () => {
         </div>
       </div>
     </div>
+    ) : 
+    <div className="flex items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center">
+      <h1 className="font-bold text-6xl">No Pre-assessment found</h1>
+      <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        Create Pre-Assessment
+      </button>
+    </div>
+  </div>
+    }
+    </>
   );
 };
 

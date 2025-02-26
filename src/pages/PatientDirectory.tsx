@@ -27,7 +27,6 @@ const PatientDirectory = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
   const [weightUnit, setWeightUnit] = useState("kg")
 
   //new patient usestates
@@ -35,7 +34,10 @@ const PatientDirectory = () => {
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [age, setAge] = useState<number>(0);
-  const [address, setAddress] = useState<string>("");
+  const [streetName, setStreetName] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [province, setProvince] = useState<string>("");
+  const [postalCode, setPostalCode] = useState<string>("");
   const [bloodType, setBloodType] = useState<string>("");
   const [contact, setContact] = useState<string>("");
   const [gender, setGender] = useState<string>("");
@@ -43,6 +45,8 @@ const PatientDirectory = () => {
   const [seniorId, setSeniorId] = useState<string>("");
   const [allergies, setAllergies] = useState<string>("");
 
+  const [search, setSearch] = useState<string>("");
+ 
   const patientWeight = `${weight} ${weightUnit}`
 
   const addPatient = async (e: FormEvent) => {
@@ -54,7 +58,10 @@ const PatientDirectory = () => {
       last_name: lastName,
       email: email,
       age: age,
-      address: address,
+      street_name: streetName,
+      city: city,
+      state_province: province,
+      postal_code: postalCode,
       blood_type: bloodType,
       contact_number: contact,
       gender: gender,
@@ -64,27 +71,16 @@ const PatientDirectory = () => {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/create-patient", {
-        method: "POST",
-        body: JSON.stringify(newPatient),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authTokens?.access}`,
-        },
-      });
+      const response = await api.post("/create-patient", newPatient)
 
-      if (!response) {
-        throw new Error(`Error! status: ${response}`);
-      }
-
-      const newData = await response.json();
-      console.log("New Patient added!", newData);
+      console.log(response.data);
+      console.log("New Patient added!");
 
       fetchPatients();
 
       handleClear();
       setIsOpen(!isOpen);
-      fetchPatients();
+
     } catch (error) {
       console.log(error);
     }
@@ -101,20 +97,20 @@ const PatientDirectory = () => {
     setWeight(0);
     setSeniorId("");
     setAllergies("");
-    setAddress("");
+    setStreetName("");
   };
 
     const filteredPatient = useMemo(() => {
       return patients.filter(patient =>
         patient.first_name.toLowerCase().includes(firstName.toLowerCase())
       );
-    }, [patients, firstName]);
+    }, [patients, search]);
 
   const fetchPatients = async () => {
     try {
       const response = await api.get("/patients");
       const data = await response.data;
-      setPatients(data.data);
+      setPatients(() => data.data); 
     } catch (error) {
       console.log(error);
     }
@@ -167,15 +163,44 @@ const PatientDirectory = () => {
               />
             </div>
       
-            {/* Row 3: Address */}
+            {/* Row 3: Street, City, Province, Postal Code */}
             <div className="flex flex-col">
-              <label>Address</label>
+              <label>Street Name</label>
               <input
                 className="border rounded-md px-2 border-gray-300"
-                placeholder="Address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Street Name"
+                value={streetName}
+                onChange={(e) => setStreetName(e.target.value)}
               />
+            </div>
+            <div className="flex gap-4">
+              <div className="flex flex-col w-1/3">
+                <label>City</label>
+                <input
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="City"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col w-1/3">
+                <label>State/Province</label>
+                <input
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="Province"
+                  value={province}
+                  onChange={(e) => setProvince(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col w-1/3">
+                <label>Postal Code</label>
+                <input
+                  className="border rounded-md px-2 border-gray-300"
+                  placeholder="Postal Code"
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                />
+              </div>
             </div>
       
             {/* Row 4: Contact Number */}
@@ -283,20 +308,21 @@ const PatientDirectory = () => {
             <PrimaryBtn type="submit">Submit</PrimaryBtn>
           </div>
         </form>
-      </Modal>      
+      </Modal>
       )}
       {selectedPatient && (
         <SidePanel
           patient={selectedPatient}
           setSelectedPatient={setSelectedPatient}
+          fetchPatients={fetchPatients}
         />
       )}
       <div className="w-full flex justify-start gap-4">
         <div className="flex gap-4 items-center">
           <SearchBar
             placeholder="Search Patient..."
-            search={firstName}
-            setSearch={setFirstName}
+            search={search}
+            setSearch={setSearch}
           />
         </div>
         <PrimaryBtn
