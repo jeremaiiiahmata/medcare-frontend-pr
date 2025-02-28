@@ -42,17 +42,17 @@ const PreAssesmentListPage = () => {
     <div className="flex flex-1">
       <div className="h-full w-full p-7 flex justify-center flex-col">
         <div>
-          <h1 className="text-5xl font-bold py-5 w-fit">Pre-Assessments</h1>
+          <h1 className="text-5xl font-bold py-5 w-fit">Assessments</h1>
         </div>
         <div className="w-full flex justify-start gap-4 py-2">
-        <div className="flex gap-4 items-center">
-          <SearchBar
-            placeholder="Search Patient..."
-            search={firstName}
-            setSearch={setFirstName}
-          />
+          <div className="flex gap-4 items-center">
+            <SearchBar
+              placeholder="Search Patient..."
+              search={firstName}
+              setSearch={setFirstName}
+            />
+          </div>
         </div>
-      </div>
         <PreAssessmentTabular
           preassessments={filteredAssessments}
           fetchData={fetchData}

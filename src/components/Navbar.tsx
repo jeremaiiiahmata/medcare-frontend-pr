@@ -25,7 +25,7 @@ const Navbar = () => {
             { path: "/dashboard", label: "Dashboard" },
             { path: "/patient-directory", label: "Patients" },
             { path: "/prescription-list", label: "Prescriptions" },
-            { path: "/preassessment-list", label: "Pre-Assessments" },
+            { path: "/preassessment-list", label: "Assessments" },
             { path: "/edit-profile", label: "Edit Profile" }
           ].map(({ path, label }) => (
             <div key={path} className="relative">

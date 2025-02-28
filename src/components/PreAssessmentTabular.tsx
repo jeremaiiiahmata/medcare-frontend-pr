@@ -92,7 +92,7 @@ const PreAssessmentTabular = ({ preassessments, fetchData }: Props) => {
                         tempValue >= normalMin && tempValue <= normalMax
                           ? "bg-green-500/20 text-green-900" // Normal
                           : tempValue < normalMin
-                          ? "bg-blue-500/20 text-blue-900" // Low Temperature
+                          ? "bg-red-500/20 text-red-900" // Low Temperature
                           : "bg-red-500/20 text-red-900"; // High Fever
 
                       return (
@@ -137,11 +137,11 @@ const PreAssessmentTabular = ({ preassessments, fetchData }: Props) => {
                       let bgColor = "bg-green-500/20 text-green-900"; // Default to Normal
 
                       if (systolic < 90 || diastolic < 60) {
-                        bgColor = "bg-blue-500/20 text-blue-900"; // Hypotension (Low BP)
+                        bgColor = "bg-red-500/20 text-red-900"; // Hypotension (Low BP)
                       } else if (systolic >= 140 || diastolic >= 90) {
                         bgColor = "bg-red-500/20 text-red-900"; // Hypertension (High BP)
                       } else if (systolic >= 121 || diastolic >= 81) {
-                        bgColor = "bg-orange-500/20 text-orange-900"; // Pre-Hypertension
+                        bgColor = "bg-red-500/20 text-red-900"; // Pre-Hypertension
                       }
                       return (
                         <div
