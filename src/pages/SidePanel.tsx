@@ -216,7 +216,7 @@ const SidePanel = ({ patient, setSelectedPatient, fetchPatients}: Props) => {
                     <div className="flex">
                       <input
                         type="number"
-                        className="border rounded-md px-2 border-gray-300 w-45 h-10"
+                        className="border rounded-l-md px-2 border-gray-300 w-full h-10"
                         placeholder="Temperature"
                         value={temperature}
                         onChange={(e) => setTemperature(e.target.value)}
@@ -224,7 +224,7 @@ const SidePanel = ({ patient, setSelectedPatient, fetchPatients}: Props) => {
                       <select
                         value={unit}
                         onChange={(e) => setUnit(e.target.value)}
-                        className="border rounded-md px-2 border-gray-300 w-15"
+                        className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2"
                       >
                         <option value="°C">°C</option>
                         <option value="°F">°F</option>
