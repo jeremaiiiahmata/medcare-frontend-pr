@@ -1,45 +1,27 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Prescription } from "../models/PrescriptionInterface";
-import Swal from "sweetalert2";
-import useAxios from "../utils/UseAxios";
+import PaginationControls from "./PaginationControls";
 
 interface Props {
   prescriptions: Prescription[];
-  fetchData: () => void;
+  offset: number;
+  totalCount: number;
+  next: string | null;
+  previous: string | null;
+  setOffset: (offset: number) => void;
 }
 
-const PrescriptionTabular = ({ prescriptions, fetchData }: Props) => {
-  const api = useAxios();
+const PrescriptionTabular = ({ 
+  offset,
+  totalCount,
+  next,
+  previous,
+  setOffset,
+  prescriptions }: Props) => {
   const navigate = useNavigate();
 
   const handleClick = (id: number) => {
     navigate(`/prescription/${id}`);
-  };
-
-  const handleDelete = async (index: number) => {
-    Swal.fire({
-      title: `Confirm Delete?`,
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#F04444",
-      denyButtonColor: "#6F7D7D",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        Swal.fire("Prescription Deleted!", "", "success");
-        try {
-          const response = await api.delete(
-            `/prescription/delete?prescription_id=${index}`
-          );
-          console.log(response.status);
-          console.log(`Deteled ID : ${index}`);
-          fetchData();
-        } catch (error) {
-          console.log(`Error in deleting pre-assessment : ${error}`);
-        }
-      } else if (result.isDenied) {
-      }
-    });
   };
 
   return (
@@ -88,13 +70,13 @@ const PrescriptionTabular = ({ prescriptions, fetchData }: Props) => {
         </table>
       </div>
 
-      {/* <PaginationControls
+      <PaginationControls
 offset={offset}
 totalCount={totalCount}
 next={next}
 previous={previous}
 setOffset={setOffset}
-/> */}
+/>
     </div>
   );
 };

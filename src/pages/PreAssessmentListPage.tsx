@@ -2,24 +2,35 @@ import { useState, useEffect, useMemo } from "react";
 import useAxios from "../utils/UseAxios";
 import { PreAssessment } from "../models/PreAssessmentInterface";
 import PreAssessmentTabular from "../components/PreAssessmentTabular";
-import Modal from "../components/Modal";
 import SearchBar from "../components/SearchBar";
-import PrimaryBtn from "../components/PrimaryBtn";
+import { PaginatedResult } from "../models/PaginationInterface";
 
 const PreAssesmentListPage = () => {
   const api = useAxios();
-  const patientId = 1; // hard-coded pa. get the patientID na clinick through props?
 
   const [preAssessments, setPreAssessments] = useState<PreAssessment[]>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  const [total, setTotal] = useState<number>(0);
+  const [nextPage, setNextPage] = useState<string | null>(null);
+  const [previousPage, setPreviousPage] = useState<string | null>(null);
+  const [offset, setOffset] = useState<number>(0);
+
+  // Used for search filtering
   const [firstName, setFirstName] = useState<string>("");
 
-  const fetchData = async () => {
+  const fetchData = async (offset?: number) => {
     try {
-      const response = await api.get("pre-assessments/all");
-      console.log("Data Fetched.");
-      setPreAssessments(response.data.data);
+      const response = await api.get<PaginatedResult<PreAssessment>>(
+              `pre-assessments/all?limit=${7}&offset=${offset}`
+      ); 
+      
+      console.log("Data Fetched. Response: ", response.data);
+      const data = await response.data;
+      console.log(data);
+      setPreAssessments(data.results || []);
+      setNextPage(data.next);
+      setPreviousPage(data.previous);
+      setTotal(data.count);
       console.log(preAssessments);
     } catch (error) {
       console.log(`Error fetching data : ${error}`);
@@ -35,8 +46,8 @@ const PreAssesmentListPage = () => {
   }, [preAssessments, firstName]);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(offset);
+  }, [offset]);
 
   return (
     <div className="flex flex-1">
@@ -54,8 +65,12 @@ const PreAssesmentListPage = () => {
           </div>
         </div>
         <PreAssessmentTabular
+          next={nextPage}
+          previous={previousPage}
+          totalCount={total}
+          setOffset={setOffset}
+          offset={offset}
           preassessments={filteredAssessments}
-          fetchData={fetchData}
         />
       </div>
     </div>

@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }: Props) => {
         showConfirmButton: false,
       });
     } catch (error) {
+      console.error(error); 
       Swal.fire({
         title: "Username or password does not exist",
         icon: "error",
@@ -112,18 +113,29 @@ export const AuthProvider = ({ children }: Props) => {
   };
 
   const logoutUser = () => {
-    setAuthTokens(null);
-    setUser(null);
-    localStorage.removeItem("authTokens");
-    navigate("/");
     Swal.fire({
-      title: "You have been logged out.",
-      icon: "success",
-      toast: true,
-      timer: 2000,
-      position: "top-right",
-      timerProgressBar: true,
-      showConfirmButton: false,
+      title: "Are you sure you want to logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setAuthTokens(null);
+        setUser(null);
+        localStorage.removeItem("authTokens");
+        navigate("/");
+        Swal.fire({
+          title: "You have been logged out.",
+          icon: "success",
+          toast: true,
+          timer: 2000,
+          position: "top-right",
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      }
     });
   };
 

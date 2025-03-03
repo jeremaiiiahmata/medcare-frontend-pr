@@ -13,6 +13,7 @@ import EditProfilePage from "./pages/EditProfilePage";
 import PreAssessmentListPage from "./pages/PreAssessmentListPage";
 import PreAssessmentPage from "./pages/PreAssessmentPage";
 
+
 function App() {
   return (
     <>
@@ -34,6 +35,7 @@ function App() {
             <Route Component={LoginPage} path="/login" />
             <Route Component={RegisterPage} path="/register" />
             <Route Component={LandingPage} path="/" />
+
           </Routes>
         </AuthProvider>
       </Router>
