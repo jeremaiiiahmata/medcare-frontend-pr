@@ -46,7 +46,6 @@ const PatientDirectory = () => {
   const [gender, setGender] = useState<string>("");
   const [weight, setWeight] = useState<number>(0);
   const [seniorId, setSeniorId] = useState<string>("");
-  const [allergies, setAllergies] = useState<string>("");
 
   const [search, setSearch] = useState<string>("");
 
@@ -132,6 +131,7 @@ const PatientDirectory = () => {
   const handleClear = () => {
     setFirstName("");
     setLastName("");
+    setMiddleName("");
     setEmail("");
     setContact("");
     setAge(0);

@@ -1,40 +1,46 @@
-import { useContext, useEffect, useState, useMemo } from "react";
-import { jwtDecode } from "jwt-decode";
+import { useEffect, useState, useMemo } from "react";
 import { Prescription } from "../models/PrescriptionInterface";
 import SearchBar from "../components/SearchBar";
-import Spinner from "../components/Spinner";
 import PrescriptionTabular from "../components/PrescriptionTabular";
-
 import useAxios from "../utils/UseAxios";
-import AuthContext from "../context/AuthContext";
+import { PaginatedResult } from "../models/PaginationInterface";
 
 const PrescriptionListPage = () => {
-  const authContext = useContext(AuthContext);
   const api = useAxios();
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
-  const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
-  const [error, setError] = useState("");
+
+  const [total, setTotal] = useState<number>(0);
+  const [nextPage, setNextPage] = useState<string | null>(null);
+  const [previousPage, setPreviousPage] = useState<string | null>(null);
+  const [offset, setOffset] = useState<number>(0);
 
 
-  const fetchData = async () => {
+  const fetchData = async (offset? : number) => {
     try {
-      const response = await api.get(`/prescriptions/all`);
-      console.log("API Response:", response.data);
-      setPrescriptions(response.data.data);
+        const response = await api.get<PaginatedResult<Prescription>>(
+                `prescriptions/all?limit=${7}&offset=${offset}`
+        ); 
+        console.log("Data Fetched. Response: ", response.data);
+        const data = await response.data;
+        console.log(data);
+        setPrescriptions(data.results || []);
+        setNextPage(data.next);
+        setPreviousPage(data.previous);
+        setTotal(data.count);
+        console.log(`Prescriptions: ${prescriptions}`);
     } catch (error) {
       console.log(error);
       setPrescriptions([]);
     } finally {
-      setLoading(false);
+      console.log("Data Fetched");
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(offset);
+  }, [offset]);
 
   // Filter prescriptions based on the search term
   const filteredPrescriptions = useMemo(() => {
@@ -60,8 +66,12 @@ const PrescriptionListPage = () => {
           </div>
         </div>
           <PrescriptionTabular
+          next={nextPage}
+          previous={previousPage}
+          totalCount={total}
+          setOffset={setOffset}
+          offset={offset}
             prescriptions={filteredPrescriptions}
-            fetchData={fetchData}
           />
         </div>
     </div>

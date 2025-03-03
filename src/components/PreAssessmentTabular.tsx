@@ -1,46 +1,28 @@
 import { useNavigate } from "react-router-dom";
 import { PreAssessment } from "../models/PreAssessmentInterface";
-import useAxios from "../utils/UseAxios";
-import Swal from "sweetalert2";
+import PaginationControls from "./PaginationControls";
 
 interface Props {
   preassessments: PreAssessment[];
-  fetchData: () => void;
+  offset: number;
+  totalCount: number;
+  next: string | null;
+  previous: string | null;
+  setOffset: (offset: number) => void;
 }
 
-const PreAssessmentTabular = ({ preassessments, fetchData }: Props) => {
-  const api = useAxios();
+const PreAssessmentTabular = ({ 
+  offset,
+  totalCount,
+  next,
+  previous,
+  setOffset,
+  preassessments 
+}: Props) => {
   const navigate = useNavigate();
 
   const handleClick = (id: number) => {
     navigate(`/preassessment/${id}`);
-  };
-
-  const handleDelete = async (index: number) => {
-    Swal.fire({
-      title: `Confirm Delete?`,
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#F04444",
-      denyButtonColor: "#6F7D7D",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        Swal.fire("Pre-Assessment Deleted!", "", "success");
-        try {
-          const response = await api.delete("/pre-assessment/delete", {
-            params: { pre_assessmentID: index },
-          });
-
-          console.log(response.status);
-          console.log(`Deteled ID : ${index}`);
-          fetchData();
-        } catch (error) {
-          console.log(`Error in deleting pre-assessment : ${error}`);
-        }
-      } else if (result.isDenied) {
-      }
-    });
   };
 
   return (
@@ -74,7 +56,11 @@ const PreAssessmentTabular = ({ preassessments, fetchData }: Props) => {
                   <p className="text-gray-600 text-xs uppercase">
                     {preassessment.patient?.email}
                   </p>
+                  <p className="text-gray-600 text-xs uppercase">
+                    {preassessment?.date_created}
+                  </p>
                 </td>
+            
                 <td className="px-4 py-2 border-r border-gray-300">
                   {preassessment.complaint}
                 </td>
@@ -160,13 +146,13 @@ const PreAssessmentTabular = ({ preassessments, fetchData }: Props) => {
         </table>
       </div>
 
-      {/* <PaginationControls
+      <PaginationControls
       offset={offset}
       totalCount={totalCount}
       next={next}
       previous={previous}
       setOffset={setOffset}
-    /> */}
+    />
     </div>
   );
 };

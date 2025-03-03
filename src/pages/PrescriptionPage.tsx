@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import useAxios from "../utils/UseAxios";
-import { Drug } from "../models/DrugInterface";
 import { ReportType } from "../models/ReportTypeInterface";
 import Spinner from "../components/Spinner";
 import { Link, useParams } from "react-router-dom";
@@ -9,6 +8,7 @@ import Swal from "sweetalert2";
 import { PrescriptionItem } from "../models/PrescriptionItemInterface";
 import Modal from "../components/Modal";
 import { DrugSuggestions } from "../data/DrugSuggestions";
+import { PreAssessment } from "../models/PreAssessmentInterface";
 
 const PrescriptionPage = () => {
   const api = useAxios();
@@ -22,6 +22,8 @@ const PrescriptionPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
+  const [isPreAssessOpen, setIsPreAssessOpen] = useState<boolean>(false);
+
   const [drugName, setDrugName] = useState<string>("");
   const [dosage, setDosage] = useState<string>("");
   const [frequency, setFrequency] = useState<string>("");
@@ -30,6 +32,61 @@ const PrescriptionPage = () => {
 
   const [filteredDrugs, setFilteredDrugs] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+
+  const [bloodPressure, setBloodPressure] = useState<string>("");
+  const [heartRate, setHeartRate] = useState<string>("");
+  const [temperature, setTemperature] = useState<string>("");
+  const [unit, setUnit] = useState("°C");
+  const [chronicConditions, setChronicConditions] = useState<string>("");
+  const [smokingHistory, setSmokingHistory] = useState<string>("");
+  const [alcoholHistory, setAlcoholHistory] = useState<string>("");
+  const [complaint, setComplaint] = useState<string>("");
+  const [medicalHistory, setMedicalHistory] = useState<string>("");
+  const combinedTemperature = `${temperature} ${unit}`;
+
+  // Create New Pre-Assessment
+  const addPreAssessment = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const newPreassessment: PreAssessment = {
+      prescription: Number(id),
+      blood_pressure: bloodPressure,
+      heart_rate: heartRate,
+      temperature: combinedTemperature,
+      chronic_conditions: chronicConditions,
+      smoking_history: smokingHistory,
+      alcohol_consumption_history: alcoholHistory,
+      complaint: complaint,
+      medical_history: medicalHistory,
+    };
+
+    try {
+      console.log(`Prescription id : ${id}`);
+
+      const response = await api.post(
+        `/pre-assessment/create?prescription_id=${id}`,
+        newPreassessment
+      );
+
+      console.log("Pre-Assessment Created:", response.data);
+      setIsPreAssessOpen(false);
+      handleClear();
+    } catch (error) {
+      console.log(`Error creating pre-assessment: ${error}`);
+    }
+  };
+
+  const handleClear = () => {
+    setHeartRate("");
+    setBloodPressure("");
+    setTemperature("");
+    setChronicConditions("");
+    setSmokingHistory("");
+    setAlcoholHistory("");
+    setComplaint("");
+    setMedicalHistory("");
+    setIsPreAssessOpen(false);
+  };
 
   // Handle Drug Name Input
   const handleDrugInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,7 +212,140 @@ const PrescriptionPage = () => {
 
   return (
     <div className="max-w-screen-3xl mx-auto px-5">
-      {prescription?.id == null && (
+      {/*Pre-Assessment Modal*/}
+      {isPreAssessOpen && (
+        <div className="z-50">
+          <Modal title="Add Pre-Assessment" setIsOpen={setIsPreAssessOpen}>
+            <div className="border rounded-full my-2"></div>
+            <form onSubmit={addPreAssessment}>
+              <div className="flex flex-col gap-6">
+                <div className="flex justify-between gap-4">
+                  <div className="flex flex-col w-60">
+                    <label>Heart Rate</label>
+                    <div className="flex">
+                      <input
+                        className="border rounded-l-md px-2 border-gray-300 w-full h-10"
+                        placeholder="Heart Rate"
+                        value={heartRate}
+                        onChange={(e) => setHeartRate(e.target.value)}
+                      />
+                      <span className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2">
+                        bpm
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col w-60">
+                    <label>Blood Pressure</label>
+                    <div className="flex">
+                      <input
+                        className="border rounded-l-md px-2 border-gray-300 w-full h-10"
+                        placeholder="Blood Pressure"
+                        value={bloodPressure}
+                        onChange={(e) => setBloodPressure(e.target.value)}
+                      />
+                      <span className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2">
+                        mmHg
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col w-60">
+                    <label>Temperature</label>
+                    <div className="flex">
+                      <input
+                        type="number"
+                        className="border rounded-l-md px-2 border-gray-300 w-full h-10"
+                        placeholder="Temperature"
+                        value={temperature}
+                        onChange={(e) => setTemperature(e.target.value)}
+                      />
+                      <select
+                        value={unit}
+                        onChange={(e) => setUnit(e.target.value)}
+                        className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2"
+                      >
+                        <option value="°C">°C</option>
+                        <option value="°F">°F</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between">
+                  <div className="flex flex-col">
+                    <label>Chronic Conditions</label>
+                    <input
+                      className="border rounded-md px-2 border-gray-300 h-10"
+                      placeholder="Chronic Conditions"
+                      value={chronicConditions}
+                      onChange={(e) => setChronicConditions(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label>Alcohol Consumption History</label>
+                    <select
+                      value={smokingHistory}
+                      onChange={(e) => setSmokingHistory(e.target.value)}
+                      className="border rounded-sm px-2 border-gray-300 w-60 h-10"
+                    >
+                      <option value="">Select Drinking Habit</option>
+                      <option value="Never">Never</option>
+                      <option value="Former">Former</option>
+                      <option value="Current">Current</option>
+                      <option value="Occasional">Occasional</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Smoking History</label>
+                    <select
+                      value={alcoholHistory}
+                      onChange={(e) => setAlcoholHistory(e.target.value)}
+                      className="border rounded-sm px-2 border-gray-300 w-60 h-10"
+                    >
+                      <option value="">Select Smoking Habit</option>
+                      <option value="Never">Never</option>
+                      <option value="Former">Former</option>
+                      <option value="Current">Current</option>
+                      <option value="Occasional">Occasional</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label>Chief Complaint</label>
+                  <textarea
+                    className="border rounded-md px-2 py-2 border-gray-300 h-24"
+                    placeholder="Complaint"
+                    value={complaint}
+                    onChange={(e) => setComplaint(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <label>Medical History</label>
+                  <textarea
+                    className="border rounded-md px-2 py-2 border-gray-300 h-24"
+                    placeholder="Medical History"
+                    value={medicalHistory}
+                    onChange={(e) => setMedicalHistory(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 mx-4 my-2">
+                  <button
+                    className="bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium"
+                    type="submit"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </form>
+          </Modal>
+        </div>
+      )}
+
+      {!loading && prescription?.id == null && (
         <div className="flex items-center justify-center h-screen">
           <div className="flex flex-col items-center justify-center">
             <h1 className="font-bold text-6xl">No Prescription found</h1>
@@ -166,7 +356,6 @@ const PrescriptionPage = () => {
         </div>
       )}
 
-      {loading && <Spinner />}
       {isOpen && (
         <Modal title="Add Prescription Item" setIsOpen={setIsOpen}>
           <div className="border rounded-full my-2"></div>
@@ -274,7 +463,7 @@ const PrescriptionPage = () => {
               {/* Submit Button */}
               <div className="flex justify-end gap-2 mx-4 my-2">
                 <button
-                  className="bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium"
+                  className="bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium cursor-pointer"
                   type="submit"
                 >
                   Submit
@@ -286,15 +475,34 @@ const PrescriptionPage = () => {
       )}
 
       {/* Title and Date */}
-      <h1 className="text-4xl font-bold mt-5">Title: {prescription?.title}</h1>
+      <h1 className="text-4xl font-bold mt-5">Prescription</h1>
+      <h2 className="text-2xl font-bold mt-5">Patient: {prescription?.patient?.first_name} {prescription?.patient?.last_name}</h2>
       <h2 className="text-xl font-semibold my-1">
         Date Created: {prescription?.date_created}
       </h2>
 
-      <Link to={`/preassessment/${prescription?.preassessment?.id}`}>
-        <button className="mr-3 mt-3 mb-3 p-2 bg-blue-400 hover:bg-blue-500 cursor-pointer rounded-md font-semibold text-white">
-          {" "}
-          View Linked Pre-Asssessment{" "}
+      <Link
+        to={
+          prescription?.preassessment?.id
+            ? `/preassessment/${prescription.preassessment.id}`
+            : "#"
+        }
+      >
+        <button
+          className={`mr-3 mt-3 mb-3 p-2 ${
+            prescription?.preassessment?.id
+              ? "bg-blue-400 hover:bg-blue-500 cursor-pointer"
+              : "bg-gray-400 cursor-pointer"
+          } rounded-md font-semibold text-white`}
+          onClick={() => {
+            if (!prescription?.preassessment?.id) {
+              setIsPreAssessOpen(true);
+            }
+          }}
+        >
+          {prescription?.preassessment?.id
+            ? "View Linked Pre-Assessment"
+            : "Create Pre-Assessment"}
         </button>
       </Link>
 
@@ -397,8 +605,9 @@ const PrescriptionPage = () => {
                 </button>
               </div>
               <p className="text-[12px]">
-                  Disclaimer: AI-generated reports are for reference only. Final decisions rest with the attending physician.
-                </p>
+                Disclaimer: AI-generated reports are for reference only. Final
+                decisions rest with the attending physician.
+              </p>
               {report?.interactions?.map((interaction, index) => (
                 <div
                   key={index}
