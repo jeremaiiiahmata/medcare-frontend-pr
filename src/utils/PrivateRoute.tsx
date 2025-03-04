@@ -13,7 +13,7 @@ const PrivateRoute = () => {
   const { user } = authContext;
 
   return user ? (
-    <div className="h-full">
+    <div className="h-screen flex flex-col">
       <Navbar />
       <Outlet />
     </div>
