@@ -11,6 +11,7 @@ import { DrugSuggestions } from "../data/DrugSuggestions";
 import { PreAssessment } from "../models/PreAssessmentInterface";
 import PrimaryBtn from "../components/PrimaryBtn";
 import { FaTrash } from "react-icons/fa";
+import Interaction from "../components/Interaction";
 
 const PrescriptionPage = () => {
   const api = useAxios();
@@ -609,43 +610,23 @@ const PrescriptionPage = () => {
                   Disclaimer: AI-generated reports are for reference only. Final
                   decisions rest with the attending physician/s
                 </h3>
+                <PrimaryBtn type="button" onClick={generateReport}>
+                  Generate
+                </PrimaryBtn>
               </div>
-              <div className="overflow-y-auto flex flex-col gap-2 h-[36rem] p-1">
+              <div className="overflow-y-auto flex flex-col gap-2 h-[35rem] p-1">
                 {/* Interactions */}
-                <div className="p-2 flex flex-col gap-2 bg-amber-200 rounded-sm">
-                  <h4 className="font-semibold">Drug-To-Drug Interactions</h4>
+                <div className="p-2 flex flex-col gap-2 bg-amber-50 rounded-sm">
+                  <h4 className="font-semibold my-2">
+                    Drug-To-Drug Interactions
+                  </h4>
                   {report?.interactions?.map((interaction, index) => (
-                    <div
-                      key={index}
-                      className="border-l-4 border-yellow-500 bg-yellow-100 p-2 rounded-md"
-                    >
-                      <p className="font-bold text-lg">
-                        {interaction.drug_a} + {interaction.drug_b}
-                      </p>
-                      <p className="text-sm">
-                        <strong>Severity: </strong>
-                        <span
-                          className={
-                            interaction.severity === "Major"
-                              ? "text-red-500"
-                              : "text-orange-500"
-                          }
-                        >
-                          {interaction.severity}
-                        </span>
-                      </p>
-                      <p className="text-sm">
-                        <strong>Description:</strong> {interaction.description}
-                      </p>
-                      <p className="text-sm">
-                        <strong>Management:</strong> {interaction.management}
-                      </p>
-                    </div>
+                    <Interaction key={index} interaction={interaction} />
                   ))}
                 </div>
                 {/* Adjustments */}
-                <div className="p-2 flex flex-col gap-2 bg-sky-200 rounded-sm">
-                  <h4 className="font-semibold">Dosage Adjustments</h4>
+                <div className="p-2 flex flex-col gap-2 bg-sky-50 rounded-sm">
+                  <h4 className="font-semibold my-2">Dosage Adjustments</h4>
                   {report?.dosage_adjustments?.map((adjustment, index) => (
                     <div
                       key={index}
@@ -666,8 +647,8 @@ const PrescriptionPage = () => {
                   ))}
                 </div>
                 {/* Recommendations */}
-                <div className="p-2 flex flex-col gap-2 bg-emerald-100 rounded-sm">
-                  <h4 className="font-semibold">Final Recommendation</h4>
+                <div className="p-2 flex flex-col gap-2 bg-emerald-50 rounded-sm">
+                  <h4 className="font-semibold my-2">Final Recommendation</h4>
                   {report?.final_recommendation && (
                     <div className="bg-emerald-200 p-2 rounded-md">
                       <p className="text-sm">{report.final_recommendation}</p>
