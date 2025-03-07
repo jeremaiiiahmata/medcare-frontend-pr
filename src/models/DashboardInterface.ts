@@ -16,5 +16,6 @@ export interface DashboardData {
     top_diagnosed_conditions: { condition: string; count: number }[];
     prescription_completion_rate: number;
     top_3_prescribed_medications?: string[];
+    greeting: string;
   }
   

@@ -6,7 +6,8 @@ import { PreAssessment } from "../models/PreAssessmentInterface";
 import { Prescription } from "../models/PrescriptionInterface";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { HeartPulse, Thermometer, Droplets } from "lucide-react";
+import { HeartPulse, Thermometer, Droplets, Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
 
 const PreAssessmentPage = () => {
   const { id } = useParams();
@@ -38,11 +39,27 @@ const PreAssessmentPage = () => {
       );
 
       console.log("Prescription created successfully.", response.data);
+
+      const prescriptionID = response.data.prescription.id;
+
+      Swal.fire({
+        title: "Prescription Created!",
+        text: "Prescription has been successfully created and linked to this assessment.",
+        confirmButtonColor: "#03624C",
+        confirmButtonText: "Okay",
+        icon: "success",
+        iconColor: "#2CC295",
+      }).then(() => {
+        // Navigate to the prescription page
+        if (prescriptionID) {
+          navigate(`/prescription/${prescriptionID}`);
+        }
+      });
+
       handleClear();
     } catch (error) {
       console.log("Error adding prescription:", error);
-    } finally{
-      navigate(`/prescription/${preAssessment?.prescription}`);
+    } finally {
     }
   };
 
@@ -74,10 +91,40 @@ const PreAssessmentPage = () => {
     console.log(formattedDate);
   };
 
+  const handleDelete = async () => {
+    console.log("Deleting assessment...");
+    try {
+      const response = await api.delete(
+        `pre-assessment/delete?pre_assessmentID=${id}`
+      );
+      console.log("Deleted!");
+      console.log(response);
+      Swal.fire({
+        title: "Assessment Deleted!",
+        text: "Assessment has been successfully deleted.",
+        confirmButtonColor: "#03624C",
+        confirmButtonText: "Okay",
+        icon: "success",
+        iconColor: "#2CC295",
+      }).then(() => {
+        navigate(`/preassessment-list`);
+      });
+    } catch (error) {
+      console.log(`Error in deleteing assessment : ${error}`);
+    }
+  };
+
   useEffect(() => {
-    fetchPreAssessment();
+    const fetchData = async () => {
+      await fetchPreAssessment();
+    };
+
+    fetchData();
+  }, [id]);
+
+  useEffect(() => {
     convertDate();
-  }, []);
+  }, [preAssessment]);
 
   return (
     <>
@@ -94,10 +141,12 @@ const PreAssessmentPage = () => {
                 <div className="flex flex-col gap-6">
                   {/* Row 0: Title */}
                   <div className="flex flex-col">
-                    <label>Title</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      Title
+                    </label>
                     <input
                       type="text"
-                      className="border rounded-md px-2 py-2 border-gray-300"
+                      className="border rounded-md px-2 py-2 border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                       placeholder="Title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
@@ -105,9 +154,11 @@ const PreAssessmentPage = () => {
                   </div>
 
                   <div className="flex flex-col">
-                    <label>Description</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      Description
+                    </label>
                     <textarea
-                      className="border rounded-md px-2 py-2 border-gray-300 h-24"
+                      className="border rounded-md px-2 py-2 border-gray-300 h-24 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                       placeholder="Notes"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
@@ -116,7 +167,7 @@ const PreAssessmentPage = () => {
 
                   <div className="flex justify-end gap-2 mx-4 my-2">
                     <button
-                      className="bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium cursor-pointer"
+                      className="bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium cursor-pointer hover:bg-[#024a3a] transition-colors duration-200 shadow-md hover:shadow-lg"
                       type="submit"
                     >
                       Create Prescription
@@ -128,182 +179,179 @@ const PreAssessmentPage = () => {
           </div>
         )
       }
-        <div className="bg-[#F5F6FA] min-h-screen p-4">
-          <div className="bg-[#F5F6FA] rounded-lg shadow-lg p-6 max-w-full mx-auto">
-            {/* <!-- Header --> */}
-            <div className="mb-6">
-              <Link to="/dashboard">
-                <button className="text-gray-600 hover:text-emerald-600 flex items-center transition-colors duration-300 ease-in-out group cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faArrowLeft}
-                    className="mr-2 transform group-hover:translate-x-[-3px] transition-transform duration-300"
+      <div className="bg-[#F5F6FA] min-h-screen p-4">
+        <div className="bg-[#F5F6FA] rounded-lg shadow-lg p-6 max-w-full mx-auto">
+          {/* <!-- Header --> */}
+          <div className="mb-6 flex justify-between items-center">
+            <Link to="/dashboard">
+              <button className="text-gray-600 hover:text-emerald-600 flex items-center transition-colors duration-300 ease-in-out group cursor-pointer">
+                <FontAwesomeIcon
+                  icon={faArrowLeft}
+                  className="mr-2 transform group-hover:translate-x-[-3px] transition-transform duration-300"
+                />
+                <span className="group-hover:text-emerald-700 transition-colors duration-300">
+                  Back to dashboard
+                </span>
+              </button>
+            </Link>
+            <button
+              onClick={handleDelete}
+              className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-md transition-colors duration-300 border border-red-200 cursor-pointer"
+            >
+              <Trash2 size={18} />
+              <span>Delete Assessment</span>
+            </button>
+          </div>
+
+          <div className="mb-1">
+            <h1 className="text-4xl font-bold mb-2">Assessment</h1>
+            <h2>Date Created : {date}</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* <!-- Patient Card --> */}
+            <div className="bg-white rounded-lg shadow border border-gray-100 p-6">
+              <div className="flex flex-col items-center">
+                <div className="bg-teal-100 rounded-lg w-24 h-24 flex items-center justify-center overflow-hidden mb-2">
+                  <img
+                    src="/Medcare-Logo-White.jpg"
+                    alt="MedCare logo"
+                    className="rounded-lg"
                   />
-                  <span className="group-hover:text-emerald-700 transition-colors duration-300">
-                    Back to dashboard
-                  </span>
-                </button>
-              </Link>
-            </div>
-
-            <div className="mb-1">
-              <h1 className="text-4xl font-bold mb-2">Assessment</h1>
-              <h2>Date Created : {date}</h2>
-            </div>
-            
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* <!-- Patient Card --> */}
-              <div className="bg-white rounded-lg shadow border border-gray-100 p-6">
-                <div className="flex flex-col items-center">
-                  <div className="bg-teal-100 rounded-lg w-24 h-24 flex items-center justify-center overflow-hidden mb-2">
-                    <img
-                      src="/medcare-logo.png"
-                      alt="MedCare logo"
-                      className="rounded-lg"
-                    />
-                  </div>
-                  <h3 className="text-lg font-bold mt-2">
-                    {preAssessment?.patient?.first_name}{" "}
-                    {preAssessment?.patient?.last_name}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    Age: {preAssessment?.patient?.age}
-                  </p>
-                  <Link
-                    to={
+                </div>
+                <h3 className="text-lg font-bold mt-2">
+                  {preAssessment?.patient?.first_name}{" "}
+                  {preAssessment?.patient?.last_name}
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Age: {preAssessment?.patient?.age}
+                </p>
+                <Link
+                  to={
+                    preAssessment?.prescription
+                      ? `/prescription/${preAssessment?.prescription}`
+                      : "#"
+                  }
+                >
+                  <button
+                    className={`p-2 ${
                       preAssessment?.prescription
-                        ? `/prescription/${preAssessment?.prescription}`
-                        : "#"
-                    }
+                        ? "bg-emerald-400 hover:bg-emerald-500 cursor-pointer"
+                        : "bg-gray-400 hover:bg-gray-500 cursor-pointer"
+                    } rounded-md font-semibold text-white`}
+                    onClick={() => {
+                      if (!preAssessment?.prescription) {
+                        setIsModalOpen(true);
+                      }
+                    }}
                   >
-                    <button
-                      className={`p-2 ${
-                        preAssessment?.prescription
-                          ? "bg-emerald-400 hover:bg-emerald-500 cursor-pointer"
-                          : "bg-gray-400 hover:bg-gray-500 cursor-pointer"
-                      } rounded-md font-semibold text-white`}
-                      onClick={() => {
-                        if (!preAssessment?.prescription) {
-                          setIsModalOpen(true);
-                        }
-                      }}
-                    >
-                      {preAssessment?.prescription
-                        ? "View Linked Prescrption"
-                        : "Create Prescription"}
-                    </button>
-                  </Link>
-                </div>
-              </div>
-
-              <div className="md:col-span-2 grid grid-cols-3 gap-4">
-       
-                <div className="bg-white rounded-lg shadow border border-gray-100 p-4 flex flex-col items-center justify-center">
-                  <div className="text-red-500 mb-1">
-                    <HeartPulse size={86} />
-                  </div>
-                  <p className="text-gray-600 text-sm">Heart Rate</p>
-                  <p className="text-2xl font-bold flex items-baseline">
-                    {preAssessment?.heart_rate}
-                    <span className="text-xs ml-1 text-gray-500">bpm</span>
-                  </p>
-                </div>
-
-     
-                <div className="bg-white rounded-lg shadow border border-gray-100 p-4 flex flex-col items-center justify-center">
-                  <div className="text-yellow-500 mb-1">
-                    <Thermometer size={86} />
-                  </div>
-                  <p className="text-gray-600 text-sm">Body Temperature</p>
-                  <p className="text-2xl font-bold flex items-baseline">
-                    {preAssessment?.temperature}
-                  </p>
-                </div>
-
-               
-                <div className="bg-white rounded-lg shadow border border-gray-100 p-4 flex flex-col items-center justify-center">
-                  <div className="text-red-400 mb-1">
-                    <Droplets size={86} />
-                  </div>
-                  <p className="text-gray-600 text-sm">Blood Pressure</p>
-                  <p className="text-2xl font-bold flex items-baseline">
-                    {preAssessment?.blood_pressure}
-                    <span className="text-xs ml-1 text-gray-500">mmHg</span>
-                  </p>
-                </div>
+                    {preAssessment?.prescription
+                      ? "View Linked Prescrption"
+                      : "Create Prescription"}
+                  </button>
+                </Link>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div className="bg-white rounded-lg shadow border border-gray-100 p-4">
-                <h2 className="text-lg font-semibold mb-4">Information:</h2>
-                <div className="space-y-2">
-                  <div className="flex">
-                    <div className="w-24 font-medium text-gray-600">
-                      Gender:
-                    </div>
-                    <div>Male</div>
+            <div className="md:col-span-2 grid grid-cols-3 gap-4">
+              <div className="bg-white rounded-lg shadow border border-gray-100 p-4 flex flex-col items-center justify-center">
+                <div className="text-red-500 mb-1">
+                  <HeartPulse size={86} />
+                </div>
+                <p className="text-gray-600 text-sm">Heart Rate</p>
+                <p className="text-2xl font-bold flex items-baseline">
+                  {preAssessment?.heart_rate}
+                  <span className="text-xs ml-1 text-gray-500">bpm</span>
+                </p>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-100 p-4 flex flex-col items-center justify-center">
+                <div className="text-yellow-500 mb-1">
+                  <Thermometer size={86} />
+                </div>
+                <p className="text-gray-600 text-sm">Body Temperature</p>
+                <p className="text-2xl font-bold flex items-baseline">
+                  {preAssessment?.temperature}
+                </p>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-100 p-4 flex flex-col items-center justify-center">
+                <div className="text-red-400 mb-1">
+                  <Droplets size={86} />
+                </div>
+                <p className="text-gray-600 text-sm">Blood Pressure</p>
+                <p className="text-2xl font-bold flex items-baseline">
+                  {preAssessment?.blood_pressure}
+                  <span className="text-xs ml-1 text-gray-500">mmHg</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div className="bg-white rounded-lg shadow border border-gray-100 p-4">
+              <h2 className="text-lg font-semibold mb-4">Information:</h2>
+              <div className="space-y-2">
+                <div className="flex">
+                  <div className="w-24 font-medium text-gray-600">Gender:</div>
+                  <div>Male</div>
+                </div>
+                <div className="flex">
+                  <div className="w-24 font-medium text-gray-600">
+                    Blood Type:
                   </div>
-                  <div className="flex">
-                    <div className="w-24 font-medium text-gray-600">
-                      Blood Type:
-                    </div>
-                    <div>{preAssessment?.patient?.blood_type}</div>
+                  <div>{preAssessment?.patient?.blood_type}</div>
+                </div>
+                <div className="flex">
+                  <div className="w-24 font-medium text-gray-600">
+                    Allergies:
                   </div>
-                  <div className="flex">
-                    <div className="w-24 font-medium text-gray-600">
-                      Allergies:
-                    </div>
-                    <div>{preAssessment?.patient?.allergies}</div>
+                  <div>{preAssessment?.patient?.allergies}</div>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-24 font-medium text-gray-600">
+                    Chronic Conditions:
                   </div>
-                  <div className="flex items-center">
-                    <div className="w-24 font-medium text-gray-600">
-                      Chronic Conditions:
-                    </div>
-                    <div>{preAssessment?.chronic_conditions}</div>
+                  <div>{preAssessment?.chronic_conditions}</div>
+                </div>
+                <div className="flex">
+                  <div className="w-24 font-medium text-gray-600">Weight:</div>
+                  <div>{preAssessment?.patient?.weight}</div>
+                </div>
+                <div className="flex">
+                  <div className="w-24 font-medium text-gray-600">
+                    Senior ID:
                   </div>
-                  <div className="flex">
-                    <div className="w-24 font-medium text-gray-600">
-                      Weight:
-                    </div>
-                    <div>{preAssessment?.patient?.weight}</div>
-                  </div>
-                  <div className="flex">
-                    <div className="w-24 font-medium text-gray-600">
-                      Senior ID:
-                    </div>
-                    <div>{preAssessment?.patient?.id_number}</div>
-                  </div>
+                  <div>{preAssessment?.patient?.id_number}</div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg shadow border border-gray-100 p-4">
-                <h2 className="text-lg font-semibold mb-4">Reports:</h2>
-                <div className="space-y-3">
-                  <div className="flex items-baseline p-3 border rounded-md h-[100px]">
-                    <div className="bg-red-100 p-2 rounded-md mr-3">
-                    </div>
-                    <div>
-                      <h4 className="text-md font-semibold">Complaint</h4>
-                      <p className="text-md text-gray-800">
-                        {preAssessment?.complaint}
-                      </p>
-                    </div>
+            </div>
+            <div className="bg-white rounded-lg shadow border border-gray-100 p-4">
+              <h2 className="text-lg font-semibold mb-4">Reports:</h2>
+              <div className="space-y-3">
+                <div className="flex items-baseline p-3 border rounded-md h-[100px]">
+                  <div className="bg-red-100 p-2 rounded-md mr-3"></div>
+                  <div>
+                    <h4 className="text-md font-semibold">Complaint</h4>
+                    <p className="text-md text-gray-800">
+                      {preAssessment?.complaint}
+                    </p>
                   </div>
-                  <div className="flex items-baseline p-3 border rounded-md h-[100px]">
-                    <div className="bg-red-100 p-2 rounded-md mr-3">
-                    </div>
-                    <div>
-                      <h4 className="text-md font-semibold">Medical History</h4>
-                      <p className="text-xs text-gray-500">
-                        {preAssessment?.medical_history}
-                      </p>
-                    </div>
+                </div>
+                <div className="flex items-baseline p-3 border rounded-md h-[100px]">
+                  <div className="bg-red-100 p-2 rounded-md mr-3"></div>
+                  <div>
+                    <h4 className="text-md font-semibold">Medical History</h4>
+                    <p className="text-xs text-gray-500">
+                      {preAssessment?.medical_history}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </>
   );
 };

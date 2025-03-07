@@ -147,4 +147,11 @@ export const DrugSuggestions = [
   "Thiamine",
   "Vitamin K",
   "Sodium chloride",
+  "Sulfonylureas",
+  "Claritin",
+  "Hydrocodone",
+  "Diazepam",
+  "Sumatriptan",
+  "Tiotropium",
+  "Propanolol",
 ];

@@ -8,11 +8,11 @@ const Interaction = ({ interaction }: Props) => {
   const statusStyle = (severity: string) => {
     switch (severity) {
       case "Minor":
-        return "border-teal-500 bg-teal-50";
+        return "border-amber-500 bg-amber-50";
       case "Moderate":
-        return "border-yellow-500 bg-yellow-100";
-      case "Major":
         return "border-rose-500 bg-rose-100";
+      case "Major":
+        return "border-fuchsia-500 bg-fuchsia-100";
     }
   };
 
@@ -20,9 +20,9 @@ const Interaction = ({ interaction }: Props) => {
     <div
       className={`border-l-4 ${statusStyle(
         interaction.severity
-      )} p-2 rounded-md`}
+      )} p-2 rounded-md my-1`}
     >
-      <p className="font-bold text-lg">
+      <p className="font-bold text-xl">
         {interaction.drug_a} + {interaction.drug_b}
       </p>
       <p className="text-sm">
@@ -31,10 +31,10 @@ const Interaction = ({ interaction }: Props) => {
           className={` font-semibold
             ${
               interaction.severity === "Minor"
-                ? "text-teal-500"
-                : interaction.severity === "Moderate"
                 ? "text-amber-500"
-                : "text-rose-500"
+                : interaction.severity === "Moderate"
+                ? "text-rose-500"
+                : "text-fuchsia-500"
             }
           `}
         >

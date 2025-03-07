@@ -45,9 +45,9 @@ const Dashboard = () => {
   return (
     <>
       <div className="bg-[#F5F6FA] min-h-screen h-screen flex flex-col">
-        <div className="container p-4 flex-1 overflow-hidden">
-          <h1 className="text-5xl font-bold text-[#03624C] py-3">Dashboard</h1>
-
+        <div className="w-full p-7 flex-1 overflow-hidden">
+          <h1 className="text-5xl font-bold text-[#030F0F] py-3 mt-4">Dashboard</h1>
+          <h2 className="text-xl font-bold text-[#085543] py-1 mb-4">{dashboard?.greeting}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {/* <!-- Total Patients Card --> */}
             <div className="stat-card patient-card p-6 bg-[#469B7E] rounded-lg shadow border border-gray-100">
@@ -126,7 +126,7 @@ const Dashboard = () => {
                   </svg>
                 </div>
                 <span className="text-lg text-white font-medium">
-                  Total Pre-Assessments
+                  Total Assessments
                 </span>
               </div>
               <div className="flex items-baseline justify-between">
@@ -137,7 +137,7 @@ const Dashboard = () => {
                   formatGrowth(dashboard.total_pre_assessments.growth)}
               </div>
               <p className="text-xs text-white mt-2">
-                Overall pre-assessment count since account creation
+                Overall assessment count since account creation
               </p>
             </div>
           </div>

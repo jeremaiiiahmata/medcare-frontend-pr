@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useAxios from "../utils/UseAxios";
 import { ReportType } from "../models/ReportTypeInterface";
 import Spinner from "../components/Spinner";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Prescription } from "../models/PrescriptionInterface";
 import Swal from "sweetalert2";
 import { PrescriptionItem } from "../models/PrescriptionItemInterface";
@@ -15,7 +15,7 @@ import Interaction from "../components/Interaction";
 
 const PrescriptionPage = () => {
   const api = useAxios();
-
+  const navigate = useNavigate();
   const { id } = useParams();
 
   const [report, setReport] = useState<ReportType | null>(null);
@@ -72,8 +72,25 @@ const PrescriptionPage = () => {
         newPreassessment
       );
 
-      console.log("Pre-Assessment Created:", response.data);
+      console.log("Pre-Assessment Created:", response.data.data.id);
+
+      const preAssessmentID = response.data.data.id;
+
       setIsPreAssessOpen(false);
+      Swal.fire({
+        title: "Assessment Added!",
+        text: "Assessment has been successfully created and linked to this prescription.",
+        confirmButtonColor: "#03624C",
+        confirmButtonText: "Okay",
+        icon: "success",
+        iconColor: "#2CC295",
+      }).then(() => {
+        // Navigate to the prescription page
+        if (preAssessmentID) {
+          navigate(`/preassessment/${preAssessmentID}`);
+        }
+      });
+
       handleClear();
     } catch (error) {
       console.log(`Error creating pre-assessment: ${error}`);
@@ -141,6 +158,42 @@ const PrescriptionPage = () => {
     }
   };
 
+  const handleDeletePrescription = async () => {
+    Swal.fire({
+      title: `Confirm Delete?`,
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: "Delete",
+      confirmButtonColor: "#F04444",
+      denyButtonColor: "#6F7D7D",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Prescription Item Deleted!", "", "success");
+        try {
+          const response = await api.delete(
+            `/prescription/delete?prescription_id=${id}`
+          );
+          console.log(response.status);
+          Swal.fire({
+            title: "Prescription Deleted!",
+            text: "Prescription has been successfully deleted.",
+            confirmButtonColor: "#03624C",
+            confirmButtonText: "Okay",
+            icon: "success",
+            iconColor: "#2CC295",
+          }).then(() => {
+            navigate(`/prescription-list`);
+          });
+        } catch (error) {
+          console.log(`Error in deleting pre-assessment : ${error}`);
+        }
+      } else if (result.isDenied) {
+        console.log("Delete cancelled.");
+      }
+    });
+    console.log("Deleted!");
+  };
+
   const handleDelete = async (index: number) => {
     Swal.fire({
       title: `Confirm Delete?`,
@@ -179,13 +232,25 @@ const PrescriptionPage = () => {
       notes: notes,
     };
 
-    const response = await api.post(
-      `prescription-item/add?prescription_id=${id}`,
-      newItem
-    );
-    console.log(
-      `Prescription item has been successfully added! Response : ${response}`
-    );
+    try {
+      const response = await api.post(
+        `prescription-item/add?prescription_id=${id}`,
+        newItem
+      );
+      console.log(
+        `Prescription item has been successfully added! Response : ${response}`
+      );
+
+      Swal.fire({
+        title: "Item Added!",
+        confirmButtonColor: "#03624C",
+        confirmButtonText: "Okay",
+        icon: "success",
+        iconColor: "#2CC295",
+      });
+    } catch (error) {
+      console.log(`Error in adding prescription : ${error}`);
+    }
   };
 
   const fetchPrescriptions = async () => {
@@ -220,45 +285,51 @@ const PrescriptionPage = () => {
       {/*Pre-Assessment Modal*/}
       {isPreAssessOpen && (
         <div className="z-50">
-          <Modal title="Add Pre-Assessment" setIsOpen={setIsPreAssessOpen}>
+          <Modal title="Add Assessment" setIsOpen={setIsPreAssessOpen}>
             <div className="border rounded-full my-2"></div>
             <form onSubmit={addPreAssessment}>
               <div className="flex flex-col gap-6">
                 <div className="flex justify-between gap-4">
                   <div className="flex flex-col w-60">
-                    <label>Heart Rate</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      Heart Rate
+                    </label>
                     <div className="flex">
                       <input
-                        className="border rounded-l-md px-2 border-gray-300 w-full h-10"
+                        className="border rounded-l-md px-2 border-gray-300 w-full h-10 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                         placeholder="Heart Rate"
                         value={heartRate}
                         onChange={(e) => setHeartRate(e.target.value)}
                       />
-                      <span className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2">
+                      <span className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2 text-gray-600">
                         bpm
                       </span>
                     </div>
                   </div>
                   <div className="flex flex-col w-60">
-                    <label>Blood Pressure</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      Blood Pressure
+                    </label>
                     <div className="flex">
                       <input
-                        className="border rounded-l-md px-2 border-gray-300 w-full h-10"
+                        className="border rounded-l-md px-2 border-gray-300 w-full h-10 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                         placeholder="Blood Pressure"
                         value={bloodPressure}
                         onChange={(e) => setBloodPressure(e.target.value)}
                       />
-                      <span className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2">
+                      <span className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2 text-gray-600">
                         mmHg
                       </span>
                     </div>
                   </div>
                   <div className="flex flex-col w-60">
-                    <label>Temperature</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      Temperature
+                    </label>
                     <div className="flex">
                       <input
                         type="number"
-                        className="border rounded-l-md px-2 border-gray-300 w-full h-10"
+                        className="border rounded-l-md px-2 border-gray-300 w-full h-10 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                         placeholder="Temperature"
                         value={temperature}
                         onChange={(e) => setTemperature(e.target.value)}
@@ -266,7 +337,7 @@ const PrescriptionPage = () => {
                       <select
                         value={unit}
                         onChange={(e) => setUnit(e.target.value)}
-                        className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2"
+                        className="flex items-center bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-2 text-gray-600 focus:outline-none"
                       >
                         <option value="°C">°C</option>
                         <option value="°F">°F</option>
@@ -277,9 +348,11 @@ const PrescriptionPage = () => {
 
                 <div className="flex justify-between">
                   <div className="flex flex-col">
-                    <label>Chronic Conditions</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      Chronic Conditions
+                    </label>
                     <input
-                      className="border rounded-md px-2 border-gray-300 h-10"
+                      className="border rounded-md px-2 border-gray-300 h-10 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                       placeholder="Chronic Conditions"
                       value={chronicConditions}
                       onChange={(e) => setChronicConditions(e.target.value)}
@@ -287,11 +360,13 @@ const PrescriptionPage = () => {
                   </div>
 
                   <div className="flex flex-col">
-                    <label>Alcohol Consumption History</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      Alcohol Consumption History
+                    </label>
                     <select
-                      value={smokingHistory}
-                      onChange={(e) => setSmokingHistory(e.target.value)}
-                      className="border rounded-sm px-2 border-gray-300 w-60 h-10"
+                      value={alcoholHistory}
+                      onChange={(e) => setAlcoholHistory(e.target.value)}
+                      className="border rounded-md px-2 border-gray-300 w-60 h-10 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                     >
                       <option value="">Select Drinking Habit</option>
                       <option value="Never">Never</option>
@@ -301,11 +376,13 @@ const PrescriptionPage = () => {
                     </select>
                   </div>
                   <div className="flex flex-col">
-                    <label>Smoking History</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      Smoking History
+                    </label>
                     <select
-                      value={alcoholHistory}
-                      onChange={(e) => setAlcoholHistory(e.target.value)}
-                      className="border rounded-sm px-2 border-gray-300 w-60 h-10"
+                      value={smokingHistory}
+                      onChange={(e) => setSmokingHistory(e.target.value)}
+                      className="border rounded-md px-2 border-gray-300 w-60 h-10 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                     >
                       <option value="">Select Smoking Habit</option>
                       <option value="Never">Never</option>
@@ -317,9 +394,11 @@ const PrescriptionPage = () => {
                 </div>
 
                 <div className="flex flex-col">
-                  <label>Chief Complaint</label>
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    Chief Complaint
+                  </label>
                   <textarea
-                    className="border rounded-md px-2 py-2 border-gray-300 h-24"
+                    className="border rounded-md px-2 py-2 border-gray-300 h-24 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                     placeholder="Complaint"
                     value={complaint}
                     onChange={(e) => setComplaint(e.target.value)}
@@ -327,9 +406,11 @@ const PrescriptionPage = () => {
                 </div>
 
                 <div className="flex flex-col">
-                  <label>Medical History</label>
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    Medical History
+                  </label>
                   <textarea
-                    className="border rounded-md px-2 py-2 border-gray-300 h-24"
+                    className="border rounded-md px-2 py-2 border-gray-300 h-24 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
                     placeholder="Medical History"
                     value={medicalHistory}
                     onChange={(e) => setMedicalHistory(e.target.value)}
@@ -338,7 +419,7 @@ const PrescriptionPage = () => {
 
                 <div className="flex justify-end gap-2 mx-4 my-2">
                   <button
-                    className="bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium"
+                    className="bg-[#03624C] py-2.5 px-4 rounded-md text-white font-medium cursor-pointer hover:bg-[#024a3a] transition-colors duration-200 shadow-md hover:shadow-lg"
                     type="submit"
                   >
                     Submit
@@ -376,7 +457,7 @@ const PrescriptionPage = () => {
                     type="text"
                     id="drug_name"
                     name="drug_name"
-                    className="border rounded p-2 w-full"
+                    className="border rounded-lg px-4 py-2 border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200"
                     placeholder="Enter drug name"
                     value={drugName}
                     onChange={handleDrugInputChange}
@@ -406,7 +487,7 @@ const PrescriptionPage = () => {
                     type="text"
                     id="amount"
                     name="amount"
-                    className="border rounded p-2"
+                    className="border rounded-lg px-4 py-2 border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200"
                     placeholder="Enter amount"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
@@ -425,7 +506,7 @@ const PrescriptionPage = () => {
                     type="text"
                     id="dosage"
                     name="dosage"
-                    className="border rounded p-2"
+                    className="border rounded-lg px-4 py-2 border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200"
                     placeholder="Enter dosage"
                     value={dosage}
                     onChange={(e) => setDosage(e.target.value)}
@@ -440,7 +521,7 @@ const PrescriptionPage = () => {
                     type="text"
                     id="frequency"
                     name="frequency"
-                    className="border rounded p-2"
+                    className="border rounded-lg px-4 py-2 border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200"
                     placeholder="Enter frequency"
                     value={frequency}
                     onChange={(e) => setFrequency(e.target.value)}
@@ -457,7 +538,7 @@ const PrescriptionPage = () => {
                 <textarea
                   id="notes"
                   name="notes"
-                  className="border rounded p-2"
+                  className="border rounded-lg px-4 py-2 border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200"
                   placeholder="Enter any additional notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -491,40 +572,50 @@ const PrescriptionPage = () => {
               <div className="flex items-center justify-between">
                 <div className="flex flex-col items-center">
                   <span className="flex gap-2">
-                    <strong>Title</strong>
+                    <strong>Title: </strong>
                     <p className="text-gray-500">{prescription?.title}</p>
                   </span>
                   <span className="flex gap-2">
-                    <strong>Date Created</strong>
+                    <strong>Date Created:</strong>
                     <p className="text-gray-500">
                       {prescription?.date_created}
                     </p>
                   </span>
                 </div>
-                <Link
-                  to={
-                    prescription?.preassessment?.id
-                      ? `/preassessment/${prescription.preassessment.id}`
-                      : "#"
-                  }
-                >
-                  <button
-                    className={`mr-3 mt-3 mb-3 p-2 ${
+                <div className="flex flex-col gap-2">
+                  <Link
+                    to={
                       prescription?.preassessment?.id
-                        ? "bg-blue-400 hover:bg-blue-500 cursor-pointer"
-                        : "bg-gray-400 cursor-pointer"
-                    } rounded-md font-semibold text-white`}
-                    onClick={() => {
-                      if (!prescription?.preassessment?.id) {
-                        setIsPreAssessOpen(true);
-                      }
-                    }}
+                        ? `/preassessment/${prescription.preassessment.id}`
+                        : "#"
+                    }
                   >
-                    {prescription?.preassessment?.id
-                      ? "View Linked Pre-Assessment"
-                      : "Create Pre-Assessment"}
+                    <button
+                      className={`w-full p-2 ${
+                        prescription?.preassessment?.id
+                          ? "bg-emerald-400 hover:bg-emerald-500 cursor-pointer"
+                          : "bg-gray-400 cursor-pointer"
+                      } rounded-md font-semibold text-white`}
+                      onClick={() => {
+                        if (!prescription?.preassessment?.id) {
+                          setIsPreAssessOpen(true);
+                        }
+                      }}
+                    >
+                      {prescription?.preassessment?.id
+                        ? "View Linked Assessment"
+                        : "Create Assessment"}
+                    </button>
+                  </Link>
+                  {/* Add Delete Prescription Button */}
+                  <button
+                    className="flex items-center justify-center gap-2 cursor-pointer bg-red-500 hover:bg-red-800 text-white p-2 rounded-md font-semibold transition-colors duration-200"
+                    onClick={handleDeletePrescription}
+                  >
+                    <FaTrash size={14} />
+                    Delete Prescription
                   </button>
-                </Link>
+                </div>
               </div>
               <div className="border border-gray-200 my-3" />
               <div className="flex flex-col">
@@ -553,7 +644,7 @@ const PrescriptionPage = () => {
                 {drug.map((drug, index) => (
                   <div
                     key={index}
-                    className="h-14 rounded-sm p-2 grid grid-cols-5 gap-1 items-center bg-slate-50 border border-gray-300"
+                    className="h-auto rounded-sm p-4 grid grid-cols-5 gap-1 items-center bg-slate-50 border border-gray-300"
                   >
                     <div className="flex flex-col text-sm">
                       <h3 className="font-semibold">Name</h3>
@@ -602,7 +693,7 @@ const PrescriptionPage = () => {
             </>
           ) : (
             <div className="w-full h-full flex flex-col gap-2 p-2 justify-center ">
-              <div>
+              <div className="mx-2">
                 <h2 className="font-bold text-xl text-emerald-900">
                   Report Generated
                 </h2>
@@ -610,14 +701,14 @@ const PrescriptionPage = () => {
                   Disclaimer: AI-generated reports are for reference only. Final
                   decisions rest with the attending physician/s
                 </h3>
-                <PrimaryBtn type="button" onClick={generateReport}>
-                  Generate
-                </PrimaryBtn>
+                <button className="mt-2 py-2.5 px-4 bg-emerald-400 hover:bg-emerald-600 rounded-md font-semibold cursor-pointer" onClick={generateReport}>
+                  Generate Report
+                </button>
               </div>
               <div className="overflow-y-auto flex flex-col gap-2 h-[35rem] p-1">
                 {/* Interactions */}
-                <div className="p-2 flex flex-col gap-2 bg-amber-50 rounded-sm">
-                  <h4 className="font-semibold my-2">
+                <div className="p-2 flex flex-col gap-2 rounded-sm">
+                  <h4 className="font-bold my-2 text-3xl">
                     Drug-To-Drug Interactions
                   </h4>
                   {report?.interactions?.map((interaction, index) => (
@@ -625,14 +716,14 @@ const PrescriptionPage = () => {
                   ))}
                 </div>
                 {/* Adjustments */}
-                <div className="p-2 flex flex-col gap-2 bg-sky-50 rounded-sm">
-                  <h4 className="font-semibold my-2">Dosage Adjustments</h4>
+                <div className="p-2 flex flex-col gap-2 rounded-sm">
+                  <h4 className="font-bold my-2 text-3xl">Dosage Adjustments</h4>
                   {report?.dosage_adjustments?.map((adjustment, index) => (
                     <div
                       key={index}
                       className="border-l-4 border-blue-500 bg-blue-100 p-2 rounded-md"
                     >
-                      <p className="font-bold text-lg">{adjustment.drug}</p>
+                      <p className="font-bold text-xl">{adjustment.drug}</p>
                       <p className="text-sm">
                         <strong>Reason:</strong> {adjustment.reason}
                       </p>
@@ -647,11 +738,11 @@ const PrescriptionPage = () => {
                   ))}
                 </div>
                 {/* Recommendations */}
-                <div className="p-2 flex flex-col gap-2 bg-emerald-50 rounded-sm">
-                  <h4 className="font-semibold my-2">Final Recommendation</h4>
+                <div className="p-2 flex flex-col gap-2rounded-sm">
+                  <h4 className="font-bold my-2 text-3xl">Final Recommendation</h4>
                   {report?.final_recommendation && (
                     <div className="bg-emerald-200 p-2 rounded-md">
-                      <p className="text-sm">{report.final_recommendation}</p>
+                      <p className="text-md font-semibold">{report.final_recommendation}</p>
                     </div>
                   )}
                 </div>
