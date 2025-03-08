@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { AuthTokens, DecodedToken } from "../models/AuthInterface";
 import dayjs from "dayjs";
 
-const baseURL = "http://127.0.0.1:8000/api";
+const baseURL = "/choreo-apis/medcare-prod/medcare-backend/v1";
 
 const useAxios = (): AxiosInstance => {
   const authContext = useContext(AuthContext);
