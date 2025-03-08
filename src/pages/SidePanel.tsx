@@ -10,7 +10,7 @@ import {
   MdOutlineHealthAndSafety,
 } from "react-icons/md";
 import { BsTelephone, BsGenderAmbiguous, BsDroplet } from "react-icons/bs";
-import { FaWeightHanging, FaAllergies } from "react-icons/fa";
+import { FaWeightHanging } from "react-icons/fa";
 import { GiAges } from "react-icons/gi";
 import ProfilePicture from "../components/ProfilePicture";
 import useAxios from "../utils/UseAxios";
@@ -356,16 +356,6 @@ const SidePanel = ({ patient, setSelectedPatient, fetchPatients }: Props) => {
       },
     }),
   };
-
-  const pillTab =
-    "cursor-pointer px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-1 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600";
-  const pillTabActive =
-    "cursor-pointer px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-1 bg-emerald-100 text-emerald-700 font-bold";
-
-  const boxTab =
-    "cursor-pointer px-4 py-2 border-t border-x rounded-t-md transition-all duration-300 flex items-center gap-1 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50";
-  const boxTabActive =
-    "cursor-pointer px-4 py-2 border-t border-x rounded-t-md transition-all duration-300 flex items-center gap-1 bg-white text-emerald-700 border-emerald-200 font-bold border-b-0";
 
   return (
     <>
