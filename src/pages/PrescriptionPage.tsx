@@ -445,7 +445,7 @@ const PrescriptionPage = () => {
       {isOpen && (
         <Modal title="Add Prescription Item" setIsOpen={setIsOpen}>
           <div className="border rounded-full my-2"></div>
-          <form onSubmit={addPrescriptionItem}>
+          <form onSubmit={addPrescriptionItem} >
             <div className="flex flex-col gap-6">
               {/* Row 1: Drug Name & Amount */}
               <div className="grid grid-cols-2 gap-4">
@@ -460,6 +460,7 @@ const PrescriptionPage = () => {
                     className="border rounded-lg px-4 py-2 border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200"
                     placeholder="Enter drug name"
                     value={drugName}
+                    autoComplete="off"
                     onChange={handleDrugInputChange}
                     required
                   />
@@ -608,13 +609,13 @@ const PrescriptionPage = () => {
                     </button>
                   </Link>
                   {/* Add Delete Prescription Button */}
-                  <button
+                  {/* <button
                     className="flex items-center justify-center gap-2 cursor-pointer bg-red-500 hover:bg-red-800 text-white p-2 rounded-md font-semibold transition-colors duration-200"
                     onClick={handleDeletePrescription}
                   >
                     <FaTrash size={14} />
                     Delete Prescription
-                  </button>
+                  </button> */}
                 </div>
               </div>
               <div className="border border-gray-200 my-3" />

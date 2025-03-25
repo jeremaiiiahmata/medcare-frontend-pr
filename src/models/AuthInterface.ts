@@ -13,6 +13,12 @@ export interface User {
   username: string;
 }
 
+export interface LoginResult {
+  success: boolean;
+  otp_required?: boolean;
+  error? : string;
+}
+
 export interface AuthContextType {
   user: User | null;
   authTokens: AuthTokens | null;
@@ -24,6 +30,13 @@ export interface AuthContextType {
     password: string,
     passwordValidator: string
   ) => Promise<void>;
-  loginUser: (email: string, password: string) => Promise<void>;
+  loginUser: (email: string, password: string, otp?: string) => Promise<LoginResult>;
   logoutUser: () => void;
+  verify2FA: (otp: string) => Promise<boolean>;
+  emailFor2FA: string | null;  // ✅ Ensure this is present
+  setEmailFor2FA: React.Dispatch<React.SetStateAction<string | null>>;
+
+  // ✅ Ensure 2FA state is tracked correctly
+  is2FARequired: boolean;
+  setIs2FARequired: (required: boolean) => void; // ✅ Add setter function
 }
