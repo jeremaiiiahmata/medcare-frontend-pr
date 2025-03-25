@@ -1,36 +1,69 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import { useState, useContext } from "react";
 import { IoMdArrowBack } from "react-icons/io";
 import { motion } from "framer-motion";
- 
+import Swal from "sweetalert2";
+
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+  const [otp, setOtp] = useState("");
+
   const [focused, setFocused] = useState({
     email: false,
-    password: false
+    password: false,
+    otp: false
   });
 
   const authContext = useContext(AuthContext);
+  const navigate = useNavigate(); // Redirect after login
 
   if (!authContext) {
-    throw new Error("PrivateRoute must be used within an AuthProvider");
+    throw new Error("LoginForm must be used within an AuthProvider");
   }
 
-  const { loginUser } = authContext;
+  const { loginUser, verify2FA, is2FARequired, setIs2FARequired } = authContext;
 
-  console.log(email);
-  console.log(password);
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); //prevents refreshing the page
+ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-    if (email.length > 0 && password.length > 0) {
-      loginUser(email, password); //call the loginUser, passing email and password
+  if (is2FARequired) {
+    const response = await loginUser(email, password, otp);
+    console.log("OTP Response:", response); // Debugging
+
+    const result = await verify2FA(otp);
+
+    if (!result) {
+      Swal.fire({
+        title: "Invalid OTP",
+        text: "Please check your OTP and try again.",
+        icon: "error",
+      });
+      return;
     }
-  };
 
+    return;
+  }
+
+  const response = await loginUser(email, password);
+  console.log("Login Response:", response); // Debugging
+
+  if (response?.otp_required) {
+    setIs2FARequired(true);
+  } else if (!response?.success) {
+    Swal.fire({
+      title: "Login Failed",
+      text: response.error,
+      icon: "error",
+    });
+  } else {
+    navigate("/dashboard");
+  }
+};
+  
+  
+  
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-100">
       <motion.div 
@@ -46,13 +79,10 @@ const LoginForm = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            Login
+            {is2FARequired ? "Enter OTP" : "Login"}
           </motion.h1>
           <Link to="/">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <IoMdArrowBack size={24} color="#03624C" />
             </motion.div>
           </Link>
@@ -65,85 +95,77 @@ const LoginForm = () => {
           transition={{ delay: 0.4, duration: 0.5 }}
         >
           <div className="flex flex-col gap-6">
-            <motion.div 
-              className="flex flex-col"
-              initial={{ x: -20 }}
-              animate={{ x: 0 }}
-              transition={{ delay: 0.5, duration: 0.4 }}
-            >
-              <label className="text-[#03624C] text-lg font-semibold mb-2">
-                Email
-              </label>
-              <div className={`relative rounded-lg overflow-hidden transition-all duration-300 ${focused.email ? 'ring-2 ring-[#00DF82]' : 'ring-1 ring-gray-200 hover:ring-gray-300'}`}>
+            {!is2FARequired ? (
+              <>
+                {/* Email Input */}
+                <motion.div 
+                  className="flex flex-col"
+                  initial={{ x: -20 }}
+                  animate={{ x: 0 }}
+                  transition={{ delay: 0.5, duration: 0.4 }}
+                >
+                  <label className="text-[#03624C] text-lg font-semibold mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Email Address"
+                    className="w-full p-3 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00DF82]"
+                  />
+                </motion.div>
+
+                {/* Password Input */}
+                <motion.div 
+                  className="flex flex-col"
+                  initial={{ x: -20 }}
+                  animate={{ x: 0 }}
+                  transition={{ delay: 0.6, duration: 0.4 }}
+                >
+                  <label className="text-[#03624C] text-lg font-semibold mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    className="w-full p-3 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00DF82]"
+                  />
+                </motion.div>
+              </>
+            ) : (
+              /* OTP Input */
+              <motion.div 
+                className="flex flex-col"
+                initial={{ x: -20 }}
+                animate={{ x: 0 }}
+                transition={{ delay: 0.5, duration: 0.4 }}
+              >
+                <label className="text-[#03624C] text-lg font-semibold mb-2">
+                  One-Time Password (OTP)
+                </label>
                 <input
                   type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onFocus={() => setFocused({...focused, email: true})}
-                  onBlur={() => setFocused({...focused, email: false})}
-                  placeholder="Email Address"
-                  className="w-full p-3 border-none outline-none bg-gray-50"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter OTP"
+                  className="w-full p-3 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00DF82]"
                 />
-                <motion.div 
-                  className="absolute bottom-0 left-0 right-0 h-1 bg-[#00DF82]"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: focused.email ? 1 : 0 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="flex flex-col"
-              initial={{ x: -20 }}
-              animate={{ x: 0 }}
-              transition={{ delay: 0.6, duration: 0.4 }}
-            >
-              <label className="text-[#03624C] text-lg font-semibold mb-2">
-                Password
-              </label>
-              <div className={`relative rounded-lg overflow-hidden transition-all duration-300 ${focused.password ? 'ring-2 ring-[#00DF82]' : 'ring-1 ring-gray-200 hover:ring-gray-300'}`}>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setFocused({...focused, password: true})}
-                  onBlur={() => setFocused({...focused, password: false})}
-                  placeholder="Password"
-                  className="w-full p-3 border-none outline-none bg-gray-50"
-                />
-                <motion.div 
-                  className="absolute bottom-0 left-0 right-0 h-1 bg-[#00DF82]"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: focused.password ? 1 : 0 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
           </div>
           
           <div className="flex mt-10 justify-center">
             <motion.button 
               className="rounded-lg bg-[#03624C] hover:bg-[#2cc295] px-8 py-3 font-bold text-white cursor-pointer transition-colors duration-300 shadow-md"
               type="submit"
-              whileHover={{ scale: 1.03, boxShadow: "0 10px 15px -3px rgba(0, 223, 130, 0.2)" }}
-              whileTap={{ scale: 0.97 }}
             >
-              Login
+              {is2FARequired ? "Verify OTP" : "Login"}
             </motion.button>
           </div>
         </motion.form>
-      </motion.div>
-      
-      <motion.div
-        className="mt-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
-      >
-        <Link to="/register" className="text-[#03624C] hover:text-[#00DF82] transition-colors duration-300 font-medium">
-          <p>No account yet? <span className="underline">Register here</span></p>
-        </Link>
       </motion.div>
     </div>
   );
